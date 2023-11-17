@@ -1,0 +1,53 @@
+# Ignore everything
+**
+
+# But not these files...
+!.gitignore
+!README.md
+
+# ...nor the directories...
+!wwwroot/
+!Shared/
+!Resources/
+!Properties/
+!Pages/
+
+# ...nor their contents.
+!wwwroot/**
+!Shared/**
+!Resources/**
+!Properties/**
+!Pages/**
+
+# Exclude solution files
+!*.sln
+!*.csproj
+
+# Ignore obj and bin folders
+**/obj/
+**/bin/
+
+# Ignore all files with these extensions
+*.user
+*.aps
+*.local
+*.suo
+*.userprefs
+*.userosscache
+*.sln.docstates
+
+# Ignore the packages folder
+**/packages/
+
+# Enable these if you want to ignore the restore packages of VS and NuGet
+#**/project.lock.json
+#**/.vs/
+#**/*.nuget.targets
+#**/*.nuget.props
+
+# Unignore the csproj files within the included directories
+!wwwroot/*.csproj
+!Shared/*.csproj
+!Resources/*.csproj
+!Properties/*.csproj
+!Pages/*.csproj

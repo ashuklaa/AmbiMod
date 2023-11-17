@@ -1,0 +1,12 @@
+.mPic-dbnce{
+    margin: auto;
+
+
+}
+.mPic-dbnce img{
+    padding-bottom: 5%;
+    width: 50vw;
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+}

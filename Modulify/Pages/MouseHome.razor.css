@@ -1,0 +1,106 @@
+.layoutcontainer{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+
+}
+
+.top-config{
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    margin-top: 10vh;
+    margin-left: 0;
+}
+
+.top-config input{
+    border-style: solid;
+    border-radius: 5px;
+    box-shadow: 2px 2px 7px;
+}
+
+
+.m1-sL-m4-m5{
+    display: flex;
+    flex-direction: column;
+    width: inherit;
+    align-items: end;
+
+}
+
+.midalign{
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+    padding-top: 1vh;
+}
+
+.mPic-dbnce{
+    margin: auto;
+
+
+}
+.mPic-dbnce img{
+    padding-bottom: 5%;
+    width: 50vw;
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+}
+
+.m2-sR-m3{
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    justify-content: space-evenly;
+}
+
+
+.bot-config{
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+
+}
+
+.dpi-scale{
+    width: auto;
+    margin-left: auto;
+}
+    .dpi-scale input {
+        width: 60vw;
+    }
+    .dpi-scale aside{
+        border-style: solid;
+        border-color: darkgray;
+        width: 10%;
+    }
+
+
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin-top: 10px;
+}
+
+    .slider-labels span {
+        position: relative;
+        bottom: 0;
+        font-size: 0.8em;
+        text-align: center;
+        width: 20%;
+    }
+
+        /* You can adjust the first and last labels to be aligned with the slider ends */
+        .slider-labels span:first-child {
+            width: auto;
+        }
+
+        .slider-labels span:last-child {
+            width: auto;
+        }

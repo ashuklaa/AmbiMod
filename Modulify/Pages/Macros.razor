@@ -1,0 +1,28 @@
+﻿@page "/Macros"
+
+<h3>Macro Preset Configurator</h3>
+
+<section class="mPic-dbnce">
+    <!--image of mouse-->
+    <img height="75%" src="data:image/jpeg;base64,@b64Mouse" />
+</section>
+
+
+@code {
+    public static string GetBase64ImageString(string imagePath)
+    {
+        // Read the file into a byte array
+        byte[] imageBytes;
+        using (FileStream fileStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+        {
+            using (BinaryReader binaryReader = new BinaryReader(fileStream))
+            {
+                imageBytes = binaryReader.ReadBytes((int)fileStream.Length);
+            }
+        }
+
+        // Convert byte array to Base64 string
+        return Convert.ToBase64String(imageBytes);
+    }
+    string b64Mouse = GetBase64ImageString("C:\\Users\\kidco\\source\\repos\\Modulify\\wwwroot\\mouseasset.png");
+}
