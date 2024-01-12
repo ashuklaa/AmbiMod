@@ -1,3 +1,4 @@
+#include <Keyboard.h>
 #include <Mouse.h>
 #include <LiquidCrystal_I2C.h>
 
@@ -18,6 +19,8 @@ const int MOUSE_Y = A2;
 
 LiquidCrystal_I2C lcd = LiquidCrystal_I2C(0x3F, 16, 2);
 
+// do-not-touch variables
+int mouseOn = 1;
 int mousePressed = 0;
 int mouseXZero = 0;
 int mouseYZero = 0;
@@ -28,10 +31,12 @@ int fingerprintTimer = 0;
 int fingerprintHeld = 0;
 int fingerprintUnlocked = 0;
 
-int extremeCursorSpeed = 10;
-int scrollSpeed = 1;
+// user-defined variables
+// int extremeCursorSpeed = 5;
+int scrollSpeed = 100;
 int dpiValues[] = {400, 1000, 1600};
 int mouseDelay = 10;
+char keys[] = {KEY_LEFT_CTRL, KEY_LEFT_SHIFT, 'n'};
 
 void setup()
 {
@@ -48,26 +53,49 @@ void setup()
   pinMode(MOUSE_X, INPUT);
   pinMode(MOUSE_Y, INPUT);
 
-  mouseXZero = readCursor(MOUSE_X);
-  mouseYZero = readCursor(MOUSE_Y);
-
-  Serial.begin(9600);
-  Mouse.begin();
+  // begin lcd
   lcd.init();
-  lcd.backlight();
   lcd.setCursor(0, 0);
   lcd.print("DPI: " + String(dpiValues[dpiIndex]));
+
+  // begin mouse processes
+  digitalWrite(POWER_LED, HIGH);
+  Serial.begin(9600);
+  Keyboard.begin();
+  Mouse.begin();
+  lcd.display();
+  lcd.backlight();
+  
+  // callibrate mouse
+  mouseXZero = analogRead(MOUSE_X);
+  mouseYZero = analogRead(MOUSE_Y);
 }
 
 void loop()
 {
   while (digitalRead(POWER_SWITCH) == is_pressed)
   {
-    digitalWrite(POWER_LED, HIGH); // emulated mouse on
+    // turn emulated mouse on
+    if (mouseOn == 0)
+    {
+      // begin mouse processes
+      digitalWrite(POWER_LED, HIGH);
+      Serial.begin(9600);
+      Keyboard.begin();
+      Mouse.begin();
+      lcd.display();
+      lcd.backlight();
+      
+      // callibrate mouse
+      mouseXZero = analogRead(MOUSE_X);
+      mouseYZero = analogRead(MOUSE_Y);
+
+      mouseOn = 1;
+    }
 
     // check joystick
-    int mouseX = readCursor(MOUSE_X) - mouseXZero;
-    int mouseY = readCursor(MOUSE_Y) - mouseYZero;
+    int mouseX = readCursor(MOUSE_X, mouseXZero);
+    int mouseY = readCursor(MOUSE_Y, mouseYZero);
 
     Mouse.move(mouseX, mouseY, 0);
 
@@ -127,7 +155,10 @@ void loop()
     }
 
     // test hold button to show how holding side panel buttons should work
-    readSidePanelHold(TEST_HOLD, 'P');
+    // readSidePanelHold(TEST_HOLD, 'P');
+
+    // test side panel macro (example: opens new chrome window)
+    readSidePanelMacro(TEST_HOLD, keys);
 
     // fingerprint button
     readFingerprint();
@@ -135,12 +166,31 @@ void loop()
     delay(mouseDelay);
   }
 
-  digitalWrite(POWER_LED, LOW);  // emulated mouse off
+  // turn emulated mouse off
+  if (mouseOn == 1)
+  {
+    // end mouse processes
+    digitalWrite(POWER_LED, LOW);
+    Serial.end();
+    Keyboard.end();
+    Mouse.end();
+    lcd.noDisplay();
+    lcd.noBacklight();
+
+    mouseOn = 0;
+  }
 }
 
-int readCursor(int axis)
+int readCursor(int axis, int offset)
 {
-  float distance = map(analogRead(axis), 0, 1023, -extremeCursorSpeed, extremeCursorSpeed); // map analog readings to usable speed
+  float distance = map(analogRead(axis) - offset, -offset, 1023 - offset, -dpiValues[dpiIndex]/200, dpiValues[dpiIndex]/200); // map analog readings to usable speed
+
+  // prevent small movements
+  if (abs(analogRead(axis) - offset) < 5)
+  {
+    distance = 0;
+  }
+
   return distance;
 }
 
@@ -247,5 +297,38 @@ void readFingerprint()
     fingerprintHeld = 0;
     fingerprintUnlocked = 0;
     digitalWrite(FINGERPRINT_LED, LOW);
+  }
+}
+
+void readSidePanelMacro(int pin, char key[])
+{
+  if (digitalRead(pin) == is_pressed) // if button is pressed, and button was not already pressed, press button
+  {
+    if (!buttonPressed)
+    {
+      buttonPressed = 1;
+      if (key[0] != '\0')
+      {
+        Keyboard.press(key[0]);
+      }
+      
+      if (key[1] != '\0')
+      {
+        Keyboard.press(key[1]);
+      }
+      
+      if (key[2] != '\0')
+      {
+        Keyboard.press(key[2]);
+      }
+    }
+  }
+  else  // if button is not pressed, but button was already pressed, release button
+  {
+    if (buttonPressed)
+    {
+      buttonPressed = 0;
+      Keyboard.releaseAll();
+    }
   }
 }
