@@ -22,7 +22,8 @@ namespace Modulify
 		builder.Logging.AddDebug();
 #endif
 
-            builder.Services.AddSingleton<WeatherForecastService>();
+            builder.Services.AddSingleton<DeviceManager>();
+            builder.Services.AddSingleton<SettingsManager>();
 
             return builder.Build();
         }
