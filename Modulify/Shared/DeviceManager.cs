@@ -4,25 +4,35 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Management;
+using System.IO.Ports;
 
 namespace Modulify.Shared
 {
     public class HardwareChangeListener : IDisposable
     {
         private ManagementEventWatcher watcher;
+        private DetectArduino detectArduino;
 
-        public HardwareChangeListener()
+        public HardwareChangeListener(DetectArduino detectArduino)
         {
             var hwQuery = new WqlEventQuery("SELECT * FROM Win32_DeviceChangeEvent");
+            this.detectArduino = detectArduino;
 
             watcher = new ManagementEventWatcher(hwQuery);
             watcher.EventArrived += (sender, e) => Task.Run(() => DeviceChangeTriggered(sender, e));
             watcher.Start();
         }
 
-        private void DeviceChangeTriggered(object sender, EventArrivedEventArgs e)
+        private async void DeviceChangeTriggered(object sender, EventArrivedEventArgs e)
         {
             Console.WriteLine("HW Change Detected");
+            string arduinoPort = await detectArduino.FindArduinoSerial();
+
+            if (!string.IsNullOrEmpty(arduinoPort))
+            {
+                detectArduino.Equals(arduinoPort);
+                await detectArduino.LoadSettingsAsync();
+            }
         }
 
         public void Dispose()
@@ -31,11 +41,77 @@ namespace Modulify.Shared
             watcher.Dispose();
         }
     }
+
+    public class DetectArduino
+    {
+        private DeviceManager deviceManager;
+        private SettingsManager settingsManager;
+
+        private const string ArduinoIDENT = "AmbiMod_AM1";
+        private SerialPort _arduinoPort;
+
+        public DetectArduino(DeviceManager deviceManager, SettingsManager settingsManager)
+        {
+            this.deviceManager = deviceManager;
+            this.settingsManager = settingsManager;
+        }
+
+        public async Task<string> ReadSerialData(SerialPort serialPort)
+        {
+            try
+            {
+                serialPort.ReadTimeout = 1000;
+                return serialPort.ReadLine();
+            }
+            catch(TimeoutException)
+            {
+                return null;
+            }
+        }
+
+        public async Task<string> FindArduinoSerial()
+        {
+            string[] portNames = SerialPort.GetPortNames();
+            foreach (var portN in portNames)
+            {
+                using (SerialPort serialPort = new SerialPort(portN))
+                {
+                    try
+                    {
+                        serialPort.BaudRate = 9600;
+                        serialPort.Open();
+
+                        string identStr = await ReadSerialData(serialPort);
+                        if (identStr.Contains(ArduinoIDENT))
+                        {
+                            _arduinoPort = serialPort;
+                            return portN;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.ToString());
+                    }
+
+                      
+                }
+            }
+            return null;
+        }
+        public void EstablishConnection(string portName)
+        {
+            deviceManager.EstablishSerialConnection(portName);
+        }
+        public async Task LoadSettingsAsync()
+        {
+            await settingsManager.LoadSettings();
+        }
+    }
     public class DeviceManager
     {
         /**
          * Create separate functions for each of the operations requested below. Each function should return the requested information.
-         * When a hardware change is registered, scan all connected HID devices until arduino is found.
+         * When a hardware change is registered, scan all connected serial devices until arduino is found.
          * 
          * If arduino is found, then store the name of the port its connected to and return it to the callback location. 
          * 
@@ -43,59 +119,24 @@ namespace Modulify.Shared
          * 
          */
 
-        //Hardware Change Event (Link this using WMI API to the OS-level Hardware Changes event (search windows API)
-        public event EventHandler HardwareChanged;
+        static SerialPort _serialPort;
 
-        //constructor for device manager, to initialize the Event, portname variable, and other things of that nature that are required. 
         public DeviceManager()
         {
 
         }
 
-        //async function that monitors hardwarechanged Event, should call OnHardwareChanged using an "Await" call (look at async API for DOTNET C#)
-        public async Task MonitorHWChangesStart()
+        public async void EstablishSerialConnection(string portName)
         {
+            _serialPort = new SerialPort(portName);
 
+            _serialPort.PortName = "Arduino";
+            _serialPort.BaudRate = 9600;
 
         }
 
-        //async hardware change function that searches all connected ports for arduino
-        private async Task OnHardwareChanged(object sender, EventArgs e)
-        {
 
-            await SearchForMouse();
-        }
 
-        //check each port, if mouse matching vendor and model number of Arduino micro not found, handle exception inside error handling. 
-        public async Task SearchForMouse()
-        {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                await ErrorHandling(ex);
-            }
-
-        }
-
-        //Once mouse is found, portname should be passed into this function in order to initialize mouse connection (Use Await for all async functions)
-        private async Task OnMouseFound(string portName)
-        {
-
-        }
-
-        //handle searching error within this, or if the arduino suddenly disconnects, etc. (any errors you can think of)
-        private async Task ErrorHandling(Exception ex)
-        {
-
-        }
-
-        //Establish runs every time hardware change function resolves asynchronously. 
-        public async void EstablishConnection()
-        {
-            await SearchForMouse();
-        }
+        
     }
 }
