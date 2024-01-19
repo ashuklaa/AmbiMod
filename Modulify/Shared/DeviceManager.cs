@@ -3,9 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Management;
 
 namespace Modulify.Shared
 {
+    public class HardwareChangeListener : IDisposable
+    {
+        private ManagementEventWatcher watcher;
+
+        public HardwareChangeListener()
+        {
+            var hwQuery = new WqlEventQuery("SELECT * FROM Win32_DeviceChangeEvent");
+
+            watcher = new ManagementEventWatcher(hwQuery);
+            watcher.EventArrived += (sender, e) => Task.Run(() => DeviceChangeTriggered(sender, e));
+            watcher.Start();
+        }
+
+        private void DeviceChangeTriggered(object sender, EventArrivedEventArgs e)
+        {
+            Console.WriteLine("HW Change Detected");
+        }
+
+        public void Dispose()
+        {
+            watcher.Stop();
+            watcher.Dispose();
+        }
+    }
     public class DeviceManager
     {
         /**
