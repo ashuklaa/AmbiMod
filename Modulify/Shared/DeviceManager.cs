@@ -47,7 +47,7 @@ namespace Modulify.Shared
         private DeviceManager deviceManager;
         private SettingsManager settingsManager;
 
-        private const string ArduinoIDENT = "AmbiMod_AM1";
+        private const string ArduinoIDENT = "Hello";
         private SerialPort _arduinoPort;
 
         public DetectArduino(DeviceManager deviceManager, SettingsManager settingsManager)
@@ -130,7 +130,6 @@ namespace Modulify.Shared
         {
             _serialPort = new SerialPort(portName);
 
-            _serialPort.PortName = "Arduino";
             _serialPort.BaudRate = 9600;
 
         }
