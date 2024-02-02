@@ -11,6 +11,11 @@ public class SerialCommsManager
     {
         private SerialPort _serialPort;
         private const string MouseIDENT = "Hello";
+
+        public SerialCommsManager(string portName) 
+        {
+            _serialPort = new SerialPort(portName);
+        }
         public void DetectMouse()
         {
 
