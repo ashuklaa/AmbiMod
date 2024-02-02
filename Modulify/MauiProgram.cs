@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using Modulify.Data;
+using Modulify.Shared;
 
 namespace Modulify
 {
@@ -22,8 +22,7 @@ namespace Modulify
 		builder.Logging.AddDebug();
 #endif
 
-            builder.Services.AddSingleton<DeviceManager>();
-            builder.Services.AddSingleton<SettingsManager>();
+            builder.Services.AddSingleton<DevManager>();
 
             return builder.Build();
         }

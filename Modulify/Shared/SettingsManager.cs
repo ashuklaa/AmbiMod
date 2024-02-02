@@ -15,7 +15,7 @@ namespace Modulify.Shared
         //save settings changes to mouse (every time a keybind is changed, call this. 
         public async Task SaveSettings() { }
         //Serialize settingsJSON in order to send it via SaveSettings() to the Arduino
-        private string SerializeSettings(object settingsJSON) { }
+        private string SerializeSettings(object settingsJSON) { return "hello"; }
 
         //deserialize Arduino Comms into a settingsJSON file, used inside LoadSettings()
         private void DeserializeSettings(object settingsJSON) { }

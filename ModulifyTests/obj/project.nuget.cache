@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "xMJRfmivRwxxPYjrBaszA5dJDD4qq+wBm6NyPs2/FICYbJsBFllvURky9o+fyh5v8yjvEzkYMxmbdSbzjjhPZg==",
-  "success": true,
-  "projectFilePath": "C:\\Users\\kidco\\Documents\\CapstoneProject\\AmbiMod\\ModulifyTests\\ModulifyTests.csproj",
+  "dgSpecHash": "EMfv3ycX2f468jNhl6/B7hDHA/56ueJmrarg6Dz4uL+bzpoRZr+7/RnfvLjcXiQ4rQO0ndWwpVIRbzfXvg0cVQ==",
+  "success": false,
+  "projectFilePath": "C:\\Users\\kidco\\Documents\\CapstoneProject\\AmbiMod\\ModulifyTests\\Modulify.Tests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\kidco\\.nuget\\packages\\coverlet.collector\\3.2.0\\coverlet.collector.3.2.0.nupkg.sha512",
     "C:\\Users\\kidco\\.nuget\\packages\\microsoft.codecoverage\\17.7.1\\microsoft.codecoverage.17.7.1.nupkg.sha512",
@@ -94,5 +94,15 @@
     "C:\\Users\\kidco\\.nuget\\packages\\xunit.extensibility.execution\\2.4.2\\xunit.extensibility.execution.2.4.2.nupkg.sha512",
     "C:\\Users\\kidco\\.nuget\\packages\\xunit.runner.visualstudio\\2.4.5\\xunit.runner.visualstudio.2.4.5.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1201",
+      "level": "Error",
+      "message": "Project Modulify is not compatible with net7.0 (.NETCoreApp,Version=v7.0). Project Modulify supports:\r\n  - net7.0-android33.0 (.NETCoreApp,Version=v7.0)\r\n  - net7.0-ios16.1 (.NETCoreApp,Version=v7.0)\r\n  - net7.0-maccatalyst16.1 (.NETCoreApp,Version=v7.0)\r\n  - net7.0-windows10.0.19041 (.NETCoreApp,Version=v7.0)",
+      "libraryId": "Modulify",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    }
+  ]
 }

@@ -1708,6 +1708,16 @@
         "build": {
           "build/netcoreapp3.1/xunit.runner.visualstudio.props": {}
         }
+      },
+      "Modulify/1.0.0": {
+        "type": "project",
+        "framework": "Unsupported,Version=v0.0",
+        "compile": {
+          "bin/placeholder/Modulify.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Modulify.dll": {}
+        }
       }
     }
   },
@@ -5500,11 +5510,17 @@
         "xunit.runner.visualstudio.2.4.5.nupkg.sha512",
         "xunit.runner.visualstudio.nuspec"
       ]
+    },
+    "Modulify/1.0.0": {
+      "type": "project",
+      "path": "../Modulify/Modulify.csproj",
+      "msbuildProject": "../Modulify/Modulify.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net7.0": [
       "Microsoft.NET.Test.Sdk >= 17.7.1",
+      "Modulify >= 1.0.0",
       "coverlet.collector >= 3.2.0",
       "xunit >= 2.4.2",
       "xunit.runner.visualstudio >= 2.4.5"
@@ -5517,9 +5533,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\kidco\\Documents\\CapstoneProject\\AmbiMod\\ModulifyTests\\ModulifyTests.csproj",
-      "projectName": "ModulifyTests",
-      "projectPath": "C:\\Users\\kidco\\Documents\\CapstoneProject\\AmbiMod\\ModulifyTests\\ModulifyTests.csproj",
+      "projectUniqueName": "C:\\Users\\kidco\\Documents\\CapstoneProject\\AmbiMod\\ModulifyTests\\Modulify.Tests.csproj",
+      "projectName": "Modulify.Tests",
+      "projectPath": "C:\\Users\\kidco\\Documents\\CapstoneProject\\AmbiMod\\ModulifyTests\\Modulify.Tests.csproj",
       "packagesPath": "C:\\Users\\kidco\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\kidco\\Documents\\CapstoneProject\\AmbiMod\\ModulifyTests\\obj\\",
       "projectStyle": "PackageReference",
@@ -5542,7 +5558,11 @@
       "frameworks": {
         "net7.0": {
           "targetAlias": "net7.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\kidco\\Documents\\CapstoneProject\\AmbiMod\\Modulify\\Modulify.csproj": {
+              "projectPath": "C:\\Users\\kidco\\Documents\\CapstoneProject\\AmbiMod\\Modulify\\Modulify.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -5595,5 +5615,16 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.403\\RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1201",
+      "level": "Error",
+      "message": "Project Modulify is not compatible with net7.0 (.NETCoreApp,Version=v7.0). Project Modulify supports:\r\n  - net7.0-android33.0 (.NETCoreApp,Version=v7.0)\r\n  - net7.0-ios16.1 (.NETCoreApp,Version=v7.0)\r\n  - net7.0-maccatalyst16.1 (.NETCoreApp,Version=v7.0)\r\n  - net7.0-windows10.0.19041 (.NETCoreApp,Version=v7.0)",
+      "libraryId": "Modulify",
+      "targetGraphs": [
+        "net7.0"
+      ]
+    }
+  ]
 }
