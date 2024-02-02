@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +12,11 @@ namespace Modulify.Shared
 {
     public class Profiles
     {
+        [JsonProperty("ProfileName")]
         public string ProfileName { get; set; }
+        [JsonProperty("DPI")]
         public string DPI { get; set; }
+        [Newtonsoft.Json.JsonExtensionData]
         public Dictionary<string, string> Keybinds { get; set; }
 
         public Profiles(string jsonFileName) 
@@ -64,6 +68,30 @@ namespace Modulify.Shared
 
             //add keybinds from json file into a dictionary
             this.Keybinds = jsonObj.ToObject<Dictionary<string, string>>();  
+
+        }
+
+        public void SaveToJSON()
+        {
+            string jsonProfile = JsonConvert.SerializeObject(this, Formatting.Indented);
+            string appdataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string appFolderPath = Path.Combine(appdataPath, "Modulify");
+            string profilePath = Path.Combine(appFolderPath, "Data/Profiles");
+
+            if (!Directory.Exists(profilePath))
+            {
+                Directory.CreateDirectory(profilePath);
+            }
+            string filePath = Path.Combine(profilePath, $"{this.ProfileName}.json");
+
+            try
+            {
+                File.WriteAllText(filePath, jsonProfile);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error occured while saving profile: {ex.Message}");
+            }
 
         }
     }
