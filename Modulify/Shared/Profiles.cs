@@ -50,10 +50,21 @@ namespace Modulify.Shared
         public void CreateProfileObject(string jsonTarget)
         {
             //path to profile json file
-            string jsonPath = Environment.CurrentDirectory + "Data/Profiles/" + jsonTarget + ".json";
+            string appdataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string appFolderPath = Path.Combine(appdataPath, "Modulify");
+            string profilePath = Path.Combine(appFolderPath, "Data/Profiles");
+            string jsonPath = Path.Combine(profilePath, $"{jsonTarget}.json");
 
             //convert stored profile to string
-            string jsonStr = File.ReadAllText(jsonPath);
+            string jsonStr = "";
+            if (File.Exists(jsonPath))
+            {
+                jsonStr = File.ReadAllText(jsonPath);
+            }
+            else
+            {
+                Console.WriteLine("File does not exist");
+            }
 
             //parse into Newtonsoft JSON Object
             JObject jsonObj = JObject.Parse(jsonStr);
