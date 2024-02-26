@@ -8,7 +8,7 @@ namespace Modulify.Shared
 {
     public class UIController
     {
-        private DevManager devManager;
+        //private DevManager devManager;
         private ConfigManager configManager;
 
         public void Initialize()

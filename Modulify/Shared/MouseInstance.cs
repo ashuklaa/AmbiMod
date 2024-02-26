@@ -17,7 +17,8 @@ namespace Modulify.Shared
         {
             this.PortName = portName;
             this.IsConnected = connected;
-            this.CurrentProfile = new Profiles("defaultprofile.json");
+            //this.CurrentProfile = new Profiles("defaultprofile.json");
+            //Console.WriteLine($"Arduino successfully detected on port {portName.ToString()}. Connected: {connected}");
         }
     }
 }

@@ -1,10 +1,16 @@
-﻿namespace Modulify
+﻿using Modulify.Shared;
+
+namespace Modulify
 {
     public partial class MainPage : ContentPage
     {
-        public MainPage()
+        private readonly ISerialCommsManager _sCommsMgr;
+
+        public MainPage(ISerialCommsManager sCommsMgr)
         {
             InitializeComponent();
+
+            _sCommsMgr = sCommsMgr;
         }
     }
 }

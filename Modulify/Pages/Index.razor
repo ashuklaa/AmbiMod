@@ -1,7 +1,108 @@
 ﻿@page "/"
+@inject ISerialCommsManager SerialCommsManager
+@using System.IO.Ports
+@using System.Text
+@using System.Collections.Generic
 
-<h1>Hello, world!</h1>
+<button @onclick="TestSerialConnection">Test Serial Connection</button>
+<p>@message</p>
 
-Welcome to your new app.
+@code {
+    private string message = "Awaiting mouse connection";
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    protected override async Task OnInitializedAsync()
+    {
+        SerialCommsManager.OnMouseConnected += UpdateMessage;
+        message = "Detecting mouse...";
+        await SerialCommsManager.DetectMouse();
+    }
+
+    private void UpdateMessage()
+    {
+        MouseInstance connectedMouse = SerialCommsManager.MouseInstance;
+        message = $"Arduino autodetected on port {connectedMouse?.PortName?.PortName}";
+        InvokeAsync(StateHasChanged);
+    }
+    public void Dispose()
+    {
+        // Clean up by unsubscribing from the event when the component is disposed
+        SerialCommsManager.OnMouseConnected -= UpdateMessage;
+    }
+    public async Task TestSerialConnection()
+    {
+        await SerialCommsManager.DetectMouse();
+
+        MouseInstance connectedMouse = SerialCommsManager.MouseInstance;
+
+        if (SerialCommsManager.MouseFound())
+        {
+            message = $"Arduino connected on port {connectedMouse.PortName.PortName}";
+        }
+    }
+        /*private SerialPort _serialPort;
+    private string message = "Click the button to test the serial connection.";
+
+    protected override void OnInitialized()
+    {
+        _serialPort = new SerialPort("COM7", 9600, Parity.None, 8, StopBits.One)
+            {
+                DtrEnable = true, // Data Terminal Ready
+                RtsEnable = true, // Request to Send
+                ReadTimeout = 5000,
+                WriteTimeout = 500
+            };
+
+        // Additional initialization code can go here
+    }
+
+    private async Task TestSerialConnection()
+    {
+        try
+        {
+            if (!_serialPort.IsOpen)
+                _serialPort.Open();
+
+            _serialPort.DiscardInBuffer(); // Clear the buffer before writing
+            _serialPort.WriteLine("Hello\n"); // Send a command to the Arduino
+
+            // Offload the read operation to a background thread to avoid UI freeze
+            var response = await Task.Run(() => ReadResponse());
+            message = $"Response: {response}";
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+        }
+    }
+
+    private string ReadResponse()
+    {
+        var buffer = new List<byte>();
+        try
+        {
+            do
+            {
+                var byteRead = _serialPort.ReadByte(); // This call is blocking
+                buffer.Add((byte)byteRead);
+            } while (_serialPort.BytesToRead > 0); // Continue reading if there's more data
+
+            // Assuming ASCII encoding for simplicity; adjust as necessary
+            return Encoding.ASCII.GetString(buffer.ToArray());
+        }
+        catch (TimeoutException)
+        {
+            return "Timeout: No response was received.";
+        }
+    }
+
+    public void Dispose()
+    {
+        if (_serialPort != null)
+        {
+            if (_serialPort.IsOpen)
+                _serialPort.Close();
+            _serialPort.Dispose();
+        }
+    }
+    */
+}

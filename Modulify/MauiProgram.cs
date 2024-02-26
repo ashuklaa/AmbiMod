@@ -22,7 +22,8 @@ namespace Modulify
 		builder.Logging.AddDebug();
 #endif
 
-            builder.Services.AddSingleton<DevManager>();
+            builder.Services.AddSingleton<ISerialCommsManager, SerialCommsManager>();
+            builder.Services.AddTransient<MainPage>();
 
             return builder.Build();
         }

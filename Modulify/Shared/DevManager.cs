@@ -7,6 +7,7 @@ using System.Management;
 using System.Text;
 using System.Threading.Tasks;
 
+/*
 namespace Modulify.Shared
 {
     public class DevManager : IDisposable
@@ -96,3 +97,4 @@ namespace Modulify.Shared
         }
     }
 }
+*/
