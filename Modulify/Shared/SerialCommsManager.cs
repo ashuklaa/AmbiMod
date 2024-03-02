@@ -1,4 +1,5 @@
-﻿using System.IO.Ports;
+﻿using Microsoft.AspNetCore.Authorization.Infrastructure;
+using System.IO.Ports;
 using System.Management;
 using Windows.Networking;
 
@@ -6,13 +7,15 @@ namespace Modulify.Shared
 {
     public interface ISerialCommsManager
     {
-        event Action OnMouseConnected;
+        event Action OnMouseDetected;
+        event Action OnDataReceived;
         MouseInstance MouseInstance { get; }
         Task DetectMouse();
         bool MouseFound();
         Task ConnectMouse(SerialPort portName);
         Task SendData(string data);
         Task<string> ReceiveData();
+        void Disconnect();
 
 
 
@@ -22,7 +25,8 @@ namespace Modulify.Shared
     {
         //Object containing SerialPort of Arduino and the profile of the mouse.
         public MouseInstance mouseInstance;
-        public event Action OnMouseConnected;
+        public event Action OnMouseDetected;
+        public event Action OnDataReceived;
 
         //Identification string, send by program as "Marco", awaiting "Polo" response
         private const string MouseIDENT = "Hello";
@@ -55,11 +59,6 @@ namespace Modulify.Shared
         }
         public async Task DetectMouse()
         {
-            if (MouseFound())
-            {
-                OnMouseConnected?.Invoke();
-                return;
-            }
             Console.WriteLine($"List of Portnames: {SerialPort.GetPortNames()}");
             //Each port in the serial ports is tested with IDENT string to find arduino (occurs every hardware change)
             foreach (var portName in SerialPort.GetPortNames())
@@ -70,62 +69,81 @@ namespace Modulify.Shared
                     using (var serialPort = new SerialPort(portName))
                     {
                         serialPort.BaudRate = 9600;
-                        serialPort.NewLine = "\n";
+                        serialPort.DataBits = 8;
+                        serialPort.Parity = Parity.None;
+                        serialPort.StopBits = StopBits.One;
                         serialPort.DtrEnable = true;
-                        serialPort.RtsEnable = true;
-
+                        serialPort.NewLine = "\n";
+                        serialPort.ReadTimeout = 1000;
+                        serialPort.DiscardNull = true;
+                        string response = "";
                         //open comms
-                        serialPort.Open();
-                        Console.WriteLine($"Serial Port opened on {portName}");
-                           
-                        //uses a streamreader object to perform async read/writes, therefore allowing the program to respond while this occurs (Avoids Not Responding)
-                        using (var reader = new StreamReader(serialPort.BaseStream))
-                        using (var writer = new StreamWriter(serialPort.BaseStream))
+
+                        if (serialPort.IsOpen)
                         {
-                            //flushes write buffer
-                            writer.AutoFlush = true;
+                            await Task.Run(() => serialPort.Close());
+                            Thread.Sleep(500);
+                        }
+                        serialPort.Open();
+                        await Task.Run(() => Thread.Sleep(3000));
+
+                        ////uses a streamreader object to perform async read/writes, therefore allowing the program to respond while this occurs (Avoids Not Responding)
+                        using (var reader = new StreamReader(serialPort.BaseStream))
+                        using (var writer = new StreamWriter(serialPort.BaseStream) { AutoFlush = true })
+                        {
+                            serialPort.DiscardInBuffer(); 
+                            serialPort.DiscardOutBuffer();
                             //sends ident phrase to port
                             await writer.WriteLineAsync(MouseIDENT);
-
                             //async reads port response
-                            var response = await reader.ReadLineAsync();
+                            response = await reader.ReadLineAsync();
                             Console.WriteLine($"Serial Port Sent Back: {response} in response");
-
-                            //if matches desired response, run ConnectMouse function on the chosen serial port. 
-                            if (response.Trim() == ResponseIDENT)
-                            {
-                                Console.WriteLine("Handshake Successful");
-                                serialPort.Close();
-                                
-                                await ConnectMouse(serialPort); //discard variable "_" still runs ConnectMouse async, but doesnt care about response.
-                                
-                                return;
-                            }
                         }
-                        //close comms on port if response is not as expected
-                        serialPort.Close();
-                        Console.WriteLine($"Serial Port closed on {portName}");
+                        //if matches desired response, run ConnectMouse function on the chosen serial port. 
+                        if (response.Trim() == ResponseIDENT)
+                        {
+                            
+                            if (!MouseFound())
+                            {
+                                mouseInstance = new MouseInstance(serialPort, true);
+                            }
+                            OnMouseDetected?.Invoke();
+                            //await ConnectMouse(serialPort);
 
+                        }
+
+                        await Task.Run(() => serialPort.Close());
+                        Console.WriteLine($"Serial Port closed on {portName}");
+                        return;
                     }
                 }
                 catch(UnauthorizedAccessException ex) 
                 {
                     //port issues, such as busy
                     Console.WriteLine($"Serial Port {portName} threw UnauthorizedAccess: {ex.Message}");
+                    Console.WriteLine(ex.StackTrace);
                 }
                 catch(IOException ex)
                 {
                     //IO errors, such as sudden disconnect, etc
                     Console.WriteLine($"Serial Port {portName} threw IOException: {ex.Message}");
+                    Console.WriteLine(ex.StackTrace);
                 }
                 catch(TimeoutException ex) 
                 {
                     //if search times out
                     Console.WriteLine($"Serial Port {portName} threw TimeoutException: {ex.Message}");
+                    Console.WriteLine(ex.StackTrace);
+                }
+                catch(ObjectDisposedException ex)
+                {
+                    Console.WriteLine($"Serial Port {portName} threw ObjectDisposedException: {ex.Message}");
+                    Console.WriteLine(ex.StackTrace);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Serial Port {portName} threw Exception: {ex.Message}");
+                    Console.WriteLine(ex.StackTrace);
                 }
             }
         }
@@ -136,26 +154,45 @@ namespace Modulify.Shared
         }
         public async Task ConnectMouse(SerialPort portName)
         {
-            //Creates new mouse object with chosen serialport from detectoin function and opens serial communications.
-            mouseInstance = new MouseInstance(portName, true);
-            
+            //Creates new mouse object with chosen serialport from detection function and opens serial communications.
+            //mouseInstance = new MouseInstance(portName, true);
+            if(mouseInstance == null) 
+            {
+                mouseInstance = new MouseInstance(portName, true);
+            }
+            if (mouseInstance.PortName.IsOpen)
+            {
+                await Task.Run(() => mouseInstance.PortName.Close());
+            }
             await Task.Run(() => mouseInstance.PortName.Open());
-            OnMouseConnected?.Invoke();
+            OnMouseDetected?.Invoke();
         }
 
         public async Task SendData(string data)
         {
+            await ConnectMouse(mouseInstance.PortName);
             //sends data to mouse asynchronously
-            await Task.Run(() => mouseInstance.PortName.WriteLine(data));
+            using (var writer = new StreamWriter(mouseInstance.PortName.BaseStream))
+            {
+                writer.AutoFlush = true;
+
+                await writer.WriteLineAsync(data);
+            }
+            return;
         }
 
         public async Task<string> ReceiveData()
         {
             string dataReceived = "";
-
+            await ConnectMouse(mouseInstance.PortName);
             //asynchronously receives data from mouse. 
-            dataReceived = await Task.Run(() => mouseInstance.PortName.ReadExisting());
+            using (var reader = new StreamReader(mouseInstance.PortName.BaseStream))
+            {
+                dataReceived = await reader.ReadLineAsync();
+                OnDataReceived?.Invoke();
+            };
 
+            await Task.Run(() => Disconnect());
 
             return dataReceived;
         }

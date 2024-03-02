@@ -7,14 +7,61 @@
 <button @onclick="TestSerialConnection">Test Serial Connection</button>
 <p>@message</p>
 
+<button @onclick="EchoConfig">Send Profile to Serial</button>
+<p>@status</p>
+
 @code {
     private string message = "Awaiting mouse connection";
+    private string status = "Awaiting sample profile send...";
+
+    private async void EchoConfig()
+    {
+        if (SerialCommsManager.MouseFound())
+        {
+            SerialCommsManager.OnDataReceived += UpdateProfile;
+            await SerialCommsManager.ConnectMouse(SerialCommsManager.MouseInstance.PortName);
+
+            string loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Pharetra vel turpis nunc eget lorem dolor.";
+
+            //string stringProfile = SerialCommsManager.MouseInstance.CurrentProfile.StringifyProfile();
+
+            List<string> packets = packetSplit(loremIpsum, 128);
+
+            foreach(var pkt in packets)
+            {
+                await SerialCommsManager.SendData(pkt);
+            }
+            await SerialCommsManager.SendData("<FIN>");
+            //await SerialCommsManager.SendData(loremIpsum);
+            var response = await SerialCommsManager.ReceiveData();
+            status = response;
+            SerialCommsManager.Disconnect();
+        }
+        return;
+
+    }
+    private List<string> packetSplit(string fullMsg, int packetSize)
+    {
+        List<string> packets = new List<string>();
+
+        for (int i = 0; i < fullMsg.Length; i += packetSize)
+        {
+            if (i + packetSize > fullMsg.Length) packetSize = fullMsg.Length - i;
+            packets.Add(fullMsg.Substring(i, packetSize));
+        }
+        return packets;
+    }
+    private async void UpdateProfile()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        SerialCommsManager.OnMouseConnected += UpdateMessage;
+        SerialCommsManager.OnMouseDetected += UpdateMessage;
         message = "Detecting mouse...";
         await SerialCommsManager.DetectMouse();
+        Console.WriteLine($"Test");
     }
 
     private void UpdateMessage()
@@ -25,19 +72,20 @@
     }
     public void Dispose()
     {
-        // Clean up by unsubscribing from the event when the component is disposed
-        SerialCommsManager.OnMouseConnected -= UpdateMessage;
+        //remove listener
+        SerialCommsManager.OnMouseDetected -= UpdateMessage;
     }
-    public async Task TestSerialConnection()
+    public async void TestSerialConnection()
     {
         await SerialCommsManager.DetectMouse();
-
         MouseInstance connectedMouse = SerialCommsManager.MouseInstance;
 
         if (SerialCommsManager.MouseFound())
         {
             message = $"Arduino connected on port {connectedMouse.PortName.PortName}";
         }
+        StateHasChanged();
+
     }
         /*private SerialPort _serialPort;
     private string message = "Click the button to test the serial connection.";

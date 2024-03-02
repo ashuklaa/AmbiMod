@@ -23,7 +23,18 @@
     </div>
 
     <script src="_framework/blazor.webview.js" autostart="false"></script>
+    <script>
+        window.prompt = (message, defaultValue) => {
+            return prompt(message, defaultValue);
+        };
+
+        window.confirm = (message) => {
+            return confirm(message);
+        };
+    </script>
 
 </body>
+
+
 
 </html>

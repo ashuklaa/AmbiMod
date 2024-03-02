@@ -25,6 +25,9 @@
         // Convert byte array to Base64 string
         return Convert.ToBase64String(imageBytes);
     }
-    string b64Mouse1 = GetBase64ImageString("C:\\Users\\kidco\\source\\repos\\Modulify\\wwwroot\\mouseasset.png");
-    string b64Mouse2 = GetBase64ImageString("C:\\Users\\kidco\\source\\repos\\Modulify\\wwwroot\\mouseasset2.png");
+    static readonly string userImgLoc1 = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\source\\repos\\AmbiMod\\Modulify\\wwwroot\\mouseasset.png";
+    static readonly string userImgLoc2 = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\source\\repos\\AmbiMod\\Modulify\\wwwroot\\mouseasset2.png";
+
+    string b64Mouse1 = GetBase64ImageString(userImgLoc1);
+    string b64Mouse2 = GetBase64ImageString(userImgLoc2);
 }

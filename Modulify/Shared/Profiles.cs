@@ -19,6 +19,13 @@ namespace Modulify.Shared
         [Newtonsoft.Json.JsonExtensionData]
         public Dictionary<string, string> Keybinds { get; set; }
 
+        public Profiles(string profName, string dpiValue, Dictionary<string, string> keybinds)
+        {
+            ProfileName = profName;
+            DPI = dpiValue;
+            Keybinds = keybinds;
+        }
+
         public Profiles(string jsonFileName) 
         {
             Keybinds = new Dictionary<string, string>();
@@ -52,7 +59,7 @@ namespace Modulify.Shared
             //path to profile json file
             string appdataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             string appFolderPath = Path.Combine(appdataPath, "Modulify");
-            string profilePath = Path.Combine(appFolderPath, "Data/Profiles");
+            string profilePath = Path.Combine(appFolderPath, "Data\\Profiles");
             string jsonPath = Path.Combine(profilePath, $"{jsonTarget}.json");
 
             //convert stored profile to string
@@ -87,7 +94,7 @@ namespace Modulify.Shared
             string jsonProfile = JsonConvert.SerializeObject(this, Formatting.Indented);
             string appdataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             string appFolderPath = Path.Combine(appdataPath, "Modulify");
-            string profilePath = Path.Combine(appFolderPath, "Data/Profiles");
+            string profilePath = Path.Combine(appFolderPath, "Data\\Profiles");
 
             if (!Directory.Exists(profilePath))
             {
