@@ -201,13 +201,27 @@ void loop()
 
 // split string by a given delimiter
 std::vector<std::string> split(std::string str, std::string delimiter) {
-
-  std::stringstream ss(str);
+  
   std::vector<std::string> config;
-  std::string token;
-  while (getline(ss, token, delimiter)) {
-    config.push_back(token);
+
+  std::string temp = "";
+
+  // iterate through each character in the string
+  for (int i = 0; i < str.length(); i++) {
+    // when delimiter is found, reset temp string and add previous temp value to config vector
+    if (str[i] == delimiter) {
+
+      config.push_back(temp);
+      temp = "";
+
+    } 
+    else { // add character to temp string
+    
+      temp += str[i];
+    
+    }
   }
+
   return config;
 }
 
@@ -370,13 +384,124 @@ void read_config() {
   }
 }
 
-std::string keybind_to_string(char button, std::vector<char> keybinds) {
+// for the char to string
+std::string mk_keybind_to_string(char button) {
+
+    switch(button){
+      case MOUSE_LEFT: return "MOUSE_LEFT";
+      case MOUSE_RIGHT: return "MOUSE_RIGHT";
+      case MOUSE_MIDDLE: return "MOUSE_MIDDLE";
+        // KEYBOARD MODIFIERS
+      case KEY_LEFT_CTRL: return "KEY_LEFT_CTRL";
+      case KEY_LEFT_SHIFT: return "KEY_LEFT_SHIFT";
+      case KEY_LEFT_ALT: return "KEY_LEFT_ALT";
+      case KEY_LEFT_GUI: return "KEY_LEFT_GUI";
+      case KEY_RIGHT_CTRL: return "KEY_RIGHT_CTRL";
+      case KEY_RIGHT_SHIFT: return "KEY_RIGHT_SHIFT";
+      case KEY_RIGHT_ALT: return "KEY_RIGHT_ALT";
+      case KEY_RIGHT_GUI: return "KEY_RIGHT_GUI";
+        // KEYBOARD - SPECIAL KEYS
+      case KEY_TAB: return "KEY_TAB";
+      case KEY_CAPS_LOCK: return "KEY_CAPS_LOCK";
+      case KEY_BACKSPACE: return "KEY_BACKSPACE";
+      case KEY_RETURN: return "KEY_RETURN";
+      case KEY_MENU: return "KEY_MENU";
+        // KEYBOARD - NAVIGATION CLUSTER
+      case KEY_INSERT: return "KEY_INSERT";
+      case KEY_DELETE: return "KEY_DELETE";
+      case KEY_HOME: return "KEY_HOME";
+      case KEY_END: return "KEY_END";
+      case KEY_PAGE_UP: return "KEY_PAGE_UP";
+      case KEY_PAGE_DOWN: return "KEY_PAGE_DOWN";
+      case KEY_UP_ARROW: return "KEY_UP_ARROW";
+      case KEY_DOWN_ARROW: return "KEY_DOWN_ARROW";
+      case KEY_LEFT_ARROW: return "KEY_LEFT_ARROW";
+      case KEY_RIGHT_ARROW: return "KEY_RIGHT_ARROW";
+        // KEYBOARD - NUMERIC KEYPAD
+      case KEY_NUM_LOCK: return "KEY_NUM_LOCK";
+      case KEY_KP_SLASH: return "KEY_KP_SLASH";
+      case KEY_KP_ASTERISK: return "KEY_KP_ASTERISK";
+      case KEY_KP_MINUS: return "KEY_KP_MINUS";
+      case KEY_KP_PLUS: return "KEY_KP_PLUS";
+      case KEY_KP_ENTER: return "KEY_KP_ENTER";
+      case KEY_KP_1: return "KEY_KP_1";
+      case KEY_KP_2: return "KEY_KP_2";
+      case KEY_KP_3: return "KEY_KP_3";
+      case KEY_KP_4: return "KEY_KP_4";
+      case KEY_KP_5: return "KEY_KP_5";
+      case KEY_KP_6: return "KEY_KP_6";
+      case KEY_KP_7: return "KEY_KP_7";
+      case KEY_KP_8: return "KEY_KP_8";
+      case KEY_KP_9: return "KEY_KP_9";
+      case KEY_KP_0: return "KEY_KP_0";
+      case KEY_KP_DOT: return "KEY_KP_DOT";
+        // KEYBOARD - ESCAPE AND FUNCTION KEYS
+      case KEY_ESC: return "KEY_ESC";
+      case KEY_F1: return "KEY_F1";
+      case KEY_F2: return "KEY_F2";
+      case KEY_F3: return "KEY_F3";
+      case KEY_F4: return "KEY_F4";
+      case KEY_F5: return "KEY_F5";
+      case KEY_F6: return "KEY_F6";
+      case KEY_F7: return "KEY_F7";
+      case KEY_F8: return "KEY_F8";
+      case KEY_F9: return "KEY_F9";
+      case KEY_F10: return "KEY_F10";
+      case KEY_F11: return "KEY_F11";
+      case KEY_F12: return "KEY_F12";
+      case KEY_F13: return "KEY_F13";
+      case KEY_F14: return "KEY_F14";
+      case KEY_F15: return "KEY_F15";
+      case KEY_F16: return "KEY_F16";
+      case KEY_F17: return "KEY_F17";
+      case KEY_F18: return "KEY_F18";
+      case KEY_F19: return "KEY_F19";
+      case KEY_F20: return "KEY_F20";
+      case KEY_F21: return "KEY_F21";
+      case KEY_F22: return "KEY_F22";
+      case KEY_F23: return "KEY_F23";
+      case KEY_F24: return "KEY_F24";
+        // KEYBOARD - FUNCTION CONTROL KEYS
+      case KEY_PRINT_SCREEN: return "KEY_PRINT_SCREEN";
+      case KEY_SCROLL_LOCK: return "KEY_SCROLL_LOCK";
+      case KEY_PAUSE: return "KEY_PAUSE";
+    }
+
+}
+
+// for buttons to strings
+std::string button_pin_to_string(int button) {
+
+  switch(button) {
+    case LEFT_CLICK: return "LEFT_CLICK";
+    case RIGHT_CLICK: return "RIGHT_CLICK";
+    case MIDDLE_CLICK: return "MIDDLE_CLICK";
+    case MOUSE_4: return "MOUSE_4";
+    case MOUSE_5: return "MOUSE_5";
+    case MOUSE_6: return "MOUSE_6";
+    case MOUSE_7: return "MOUSE_7";
+    case MOUSE_8: return "MOUSE_8";
+    case MOUSE_9: return "MOUSE_9";
+    case MOUSE_10: return "MOUSE_10";
+    case MOUSE_11: return "MOUSE_11";
+    case MOUSE_12: return "MOUSE_12";
+  }
+
+}
+
+// FOR KEYBINDS ONLY
+std::string keybind_to_string(int button, std::vector<char> keybinds) {
 
   std::string keybind_string = "";
 
+  for (int i = 0; i < keybinds.size(); i++) {
+    keybind_string += mk_keybind_to_string(keybind[i]);
+    if (i != keybinds.size()-1) { // adds macro delimiter
+      keybind_string += "+"; 
+    }
+  }
 
-
-  return keybind_string = "";
+  return keybind_string;
 
 }
 
@@ -394,20 +519,87 @@ void config_test() {
     // DPI_SET
     current_config += "DPI_SET:"; 
     for(int i = 0; i < dpi_values.size(); i++) {
-      current_config += std::to_string(dpi_values[i]) + "+";
+      current_config += std::to_string(dpi_values[i]);
+      if (i != dpi_values.size()-1) {
+        current_config += "+"
+      }
     }
     current_config += ";";
+
+    current_config += "DEBOUNCE:" + std::tostring(DEBOUNCE) + ";";
 
     // LEFT_CLICK
     current_config += "LEFT_CLICK:";
     for(int i = 0; i < button_binds[0].size(); i++) {
-      current_config += 
+      current_config += keybind_to_string(button_map.getElement(LEFT_CLICK));
     }
     current_config += ";";
 
-    current_config += "RIGHT_CLICK";
+    current_config += "RIGHT_CLICK:";
+    for(int i = 0; i < button_binds[0].size(); i++) {
+      current_config += keybind_to_string(button_map.getElement(RIGHT_CLICK));
+    }
+    current_config += ";";
 
+    current_config += "MIDDLE_CLICK:";
+    for(int i = 0; i < button_binds[0].size(); i++) {
+      current_config += keybind_to_string(button_map.getElement(MIDDLE_CLICK));
+    }
+    current_config += ";";
 
+    current_config += "MOUSE_4:";
+    for(int i = 0; i < button_binds[0].size(); i++) {
+      current_config += keybind_to_string(button_map.getElement(MOUSE_4));
+    }
+    current_config += ";";
+
+    current_config += "MOUSE_5:";
+    for(int i = 0; i < button_binds[0].size(); i++) {
+      current_config += keybind_to_string(button_map.getElement(MOUSE_5));
+    }
+    current_config += ";";    
+
+    current_config += "MOUSE_6:";
+    for(int i = 0; i < button_binds[0].size(); i++) {
+      current_config += keybind_to_string(button_map.getElement(MOUSE_6));
+    }
+    current_config += ";";
+
+    current_config += "MOUSE_7:";
+    for(int i = 0; i < button_binds[0].size(); i++) {
+      current_config += keybind_to_string(button_map.getElement(MOUSE_7));
+    }
+    current_config += ";";
+  
+    current_config += "MOUSE_8:";
+    for(int i = 0; i < button_binds[0].size(); i++) {
+      current_config += keybind_to_string(button_map.getElement(MOUSE_8));
+    }
+    current_config += ";";    
+  
+    current_config += "MOUSE_9:";
+    for(int i = 0; i < button_binds[0].size(); i++) {
+      current_config += keybind_to_string(button_map.getElement(MOUSE_9));
+    }
+    current_config += ";";
+
+    current_config += "MOUSE_10:";
+    for(int i = 0; i < button_binds[0].size(); i++) {
+      current_config += keybind_to_string(button_map.getElement(MOUSE_10));
+    }
+    current_config += ";";
+
+    current_config += "MOUSE_11:";
+    for(int i = 0; i < button_binds[0].size(); i++) {
+      current_config += keybind_to_string(button_map.getElement(MOUSE_11));
+    }
+    current_config += ";";   
+
+    current_config += "MOUSE_12:";
+    for(int i = 0; i < button_binds[0].size(); i++) {
+      current_config += keybind_to_string(button_map.getElement(MOUSE_12));
+    }
+    current_config += ";";
 
   }
 
