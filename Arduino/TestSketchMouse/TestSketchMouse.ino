@@ -1,43 +1,24 @@
-String completeMessage = "";
 String MouseIDENT = "Hello";
 String ResponseIDENT = "World";
 boolean receiving = true;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
+  while(!Serial);
 }
 
 void loop() {
-  while (Serial.available() > 0 && receiving) {
-    String pkt = Serial.readString();
-    String trimmedPkt = pkt;
-    trimmedPkt.trim();
-    if (trimmedPkt == MouseIDENT){
-      receiving = false;
-      completeMessage = trimmedPkt;
-      break;
-    }
+  if(Serial.available() > 0){
+    String response = Serial.readStringUntil('\n');
 
-    if (pkt == "<FIN>") {
-      receiving = false;
-    } else {
-      completeMessage += trimmedPkt;
-    }
-  }
+    response.trim();
 
-  if (!receiving) {
-    // The complete message is assembled
-    // You can now parse and use the data
-    if (completeMessage == MouseIDENT){
+    if (response == MouseIDENT){
       Serial.println(ResponseIDENT);
-    }else if (completeMessage.startsWith("ProfileName:")){
-      Serial.println(completeMessage);
+    } else if (response.startsWith("ProfileName:")){
+      Serial.println("Profile Sent to Mouse: " + response);
     } else{
-      Serial.println(completeMessage);
+      Serial.println(response);
     }
-
-    // Reset for the next message
-    completeMessage = "";
-    receiving = true;
   }
 }

@@ -25,15 +25,15 @@
 
             //string stringProfile = SerialCommsManager.MouseInstance.CurrentProfile.StringifyProfile();
 
-            List<string> packets = packetSplit(loremIpsum, 128);
+            // List<string> packets = packetSplit(loremIpsum, 128);
 
-            foreach(var pkt in packets)
-            {
-                await SerialCommsManager.SendData(pkt);
-            }
-            await SerialCommsManager.SendData("<FIN>");
-            //await SerialCommsManager.SendData(loremIpsum);
-            var response = await SerialCommsManager.ReceiveData();
+            // foreach(var pkt in packets)
+            // {
+            //     await SerialCommsManager.SendData(pkt);
+            // }
+            //await SerialCommsManager.SendData("<FIN>");
+            await SerialCommsManager.SendData(loremIpsum);
+            var response = await SerialCommsManager.ReceiveData(loremIpsum);
             status = response;
             SerialCommsManager.Disconnect();
         }
@@ -77,14 +77,16 @@
     }
     public async void TestSerialConnection()
     {
-        await SerialCommsManager.DetectMouse();
+        message = "Manual Device Search Initiated";
+        await InvokeAsync(StateHasChanged);
+        await SerialCommsManager.DetectMouse().ConfigureAwait(true);
         MouseInstance connectedMouse = SerialCommsManager.MouseInstance;
 
         if (SerialCommsManager.MouseFound())
         {
             message = $"Arduino connected on port {connectedMouse.PortName.PortName}";
+            await InvokeAsync(StateHasChanged);
         }
-        StateHasChanged();
 
     }
         /*private SerialPort _serialPort;
