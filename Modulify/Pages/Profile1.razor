@@ -62,10 +62,12 @@
 
     private string ProfileName = "";
     private int DPI = 0;
+    private string[] DPI_SET = { "0" };
+    private int msDebounce = 0;
     private Dictionary<string, string> keybinds;
 
 
-    private List<string> keys = new List<string> { "M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9", "M10", "M11", "M12" };
+    private List<string> keys = new List<string> { "LEFT_CLICK", "RIGHT_CLICK", "MIDDLE_CLICK", "MOUSE_4", "MOUSE_5", "MOUSE_6", "MOUSE_7", "MOUSE_8", "MOUSE_9", "MOUSE_10", "MOUSE_11", "MOUSE_12" };
 
     private string selectedProfile;
     private List<string> profileNames = new();
@@ -120,12 +122,12 @@
             }
         }
 
-        SaveToJSON(profileName, DPI, keybinds); // Pass the profileName to save method.
+        SaveToJSON(profileName, DPI, DPI_SET, msDebounce, keybinds); // Pass the profileName to save method.
     }
 
-    private void SaveToJSON(string profileName, int DPI, Dictionary<string, string> keybinds)
+    private void SaveToJSON(string profileName, int DPI, string[] DPI_SET, int debounce, Dictionary<string, string> keybinds)
     {
-        Profiles tempProfile = new Profiles(profileName, Convert.ToString(DPI), keybinds);
+        Profiles tempProfile = new Profiles(profileName, Convert.ToString(DPI), DPI_SET, Convert.ToString(msDebounce), keybinds);
         tempProfile.SaveToJSON();
     }
 
@@ -149,6 +151,8 @@
 
         ProfileName = curProfile.ProfileName;
         DPI = Convert.ToInt32(curProfile.DPI);
+        DPI_SET = curProfile.DPI_SET;
+        msDebounce = Convert.ToInt32(curProfile.DEBOUNCE);
         keybinds = curProfile.Keybinds;
 
 

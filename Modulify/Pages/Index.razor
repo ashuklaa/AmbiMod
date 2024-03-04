@@ -25,34 +25,14 @@
 
             //string stringProfile = SerialCommsManager.MouseInstance.CurrentProfile.StringifyProfile();
 
-            // List<string> packets = packetSplit(loremIpsum, 128);
-
-            // foreach(var pkt in packets)
-            // {
-            //     await SerialCommsManager.SendData(pkt);
-            // }
-            //await SerialCommsManager.SendData("<FIN>");
             await SerialCommsManager.SendData(loremIpsum);
-            var response = await SerialCommsManager.ReceiveData(loremIpsum);
-            status = response;
-            SerialCommsManager.Disconnect();
         }
         return;
 
     }
-    private List<string> packetSplit(string fullMsg, int packetSize)
-    {
-        List<string> packets = new List<string>();
-
-        for (int i = 0; i < fullMsg.Length; i += packetSize)
-        {
-            if (i + packetSize > fullMsg.Length) packetSize = fullMsg.Length - i;
-            packets.Add(fullMsg.Substring(i, packetSize));
-        }
-        return packets;
-    }
     private async void UpdateProfile()
     {
+        status = SerialCommsManager.response;
         await InvokeAsync(StateHasChanged);
     }
 

@@ -16,13 +16,20 @@ namespace Modulify.Shared
         public string ProfileName { get; set; }
         [JsonProperty("DPI")]
         public string DPI { get; set; }
+        [JsonProperty("DPI_SET")]
+        public string[] DPI_SET { get; set; }
+        [JsonProperty("DEBOUNCE")]
+        public string DEBOUNCE { get; set; }
+
         [Newtonsoft.Json.JsonExtensionData]
         public Dictionary<string, string> Keybinds { get; set; }
 
-        public Profiles(string profName, string dpiValue, Dictionary<string, string> keybinds)
+        public Profiles(string profName, string dpiValue, string[] dpiSet, string debounce, Dictionary<string, string> keybinds)
         {
             ProfileName = profName;
             DPI = dpiValue;
+            DPI_SET = dpiSet;
+            DEBOUNCE = debounce;
             Keybinds = keybinds;
         }
 
@@ -39,7 +46,13 @@ namespace Modulify.Shared
             //hardcode the values not stored in dictionary
             string jsonStr =
                 "ProfileName:" + ProfileName +
-                ";DPI:" + DPI;
+                ";DPI:" + DPI + 
+                ";DPI_SET:" + DPI_SET[0] + "+" + 
+                              DPI_SET[1] + "+" + 
+                              DPI_SET[2] + "+" + 
+                              DPI_SET[3] + "+" + 
+                              DPI_SET[4] + "+" +
+                "DEBOUNCE:" + DEBOUNCE;
 
             //run for loop through keybinds dictionary to generate desired string format
             foreach(var bind in Keybinds)
@@ -79,10 +92,14 @@ namespace Modulify.Shared
             //Manually parse nonbind values into object
             this.ProfileName = jsonObj["ProfileName"].ToString();
             this.DPI = jsonObj["DPI"].ToString();
+            this.DPI_SET = jsonObj["DPI_SET"].ToObject<string[]>();
+            this.DEBOUNCE = jsonObj["DEBOUNCE"].ToString();
 
             //pop from jsonobject so that next function can add remaining binds to dictionary
             jsonObj.Remove("ProfileName");
             jsonObj.Remove("DPI");
+            jsonObj.Remove("DPI_SET");
+            jsonObj.Remove("DEBOUNCE");
 
             //add keybinds from json file into a dictionary
             this.Keybinds = jsonObj.ToObject<Dictionary<string, string>>();  

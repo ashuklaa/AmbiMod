@@ -9,12 +9,13 @@ namespace Modulify.Shared
     {
         event Action OnMouseDetected;
         event Action OnDataReceived;
+        string response { get; }
         MouseInstance MouseInstance { get; }
         Task DetectMouse();
         bool MouseFound();
         Task ConnectMouse(SerialPort portName);
         Task SendData(string data);
-        Task<string> ReceiveData(string sentData);
+        void ReceiveData(object sender, SerialDataReceivedEventArgs e);
         void Disconnect();
 
 
@@ -33,6 +34,7 @@ namespace Modulify.Shared
         //Identification string, send by program as "Marco", awaiting "Polo" response
         private const string MouseIDENT = "Hello";
         private const string ResponseIDENT = "World";
+        public string response { get; set; } = "";
 
         public MouseInstance MouseInstance
         {
@@ -67,7 +69,6 @@ namespace Modulify.Shared
             {
                 await serialLock.WaitAsync();
                 var cts = new CancellationTokenSource(1000);
-                string response = "";
                 //instantiate serial port for each available name
                 using (var serialPort = new SerialPort(portName))
                 {
@@ -84,6 +85,8 @@ namespace Modulify.Shared
                         serialPort.DiscardNull = true;
                         serialPort.Handshake = Handshake.None;
                         serialPort.Encoding = System.Text.Encoding.ASCII;
+
+                        
 
                         //open comms
                         if (!serialPort.IsOpen)
@@ -134,7 +137,7 @@ namespace Modulify.Shared
                         serialPort.DiscardInBuffer();
                         serialPort.DiscardOutBuffer();
                         serialPort.WriteLine(MouseIDENT);
-                        response = serialPort.ReadLine();
+                        await Task.Run(() => response = serialPort.ReadLine());
                         Console.WriteLine($"Serial Port {portName} threw TimeoutException: {ex.Message}");
                         Console.WriteLine(ex.StackTrace);
                     }
@@ -180,61 +183,71 @@ namespace Modulify.Shared
         {
             //Creates new mouse object with chosen serialport from detection function and opens serial communications.
             //mouseInstance = new MouseInstance(portName, true);
+            //await serialLock.WaitAsync();
+            
             if(mouseInstance == null) 
             {
                 mouseInstance = new MouseInstance(portName, true);
             }
+            portName.DataReceived += ReceiveData;
             if (mouseInstance.PortName.IsOpen)
             {
                 await Task.Run(() => mouseInstance.PortName.Close());
+                await Task.Run(() => Thread.Sleep(500));
             }
             await Task.Run(() => mouseInstance.PortName.Open());
             OnMouseDetected?.Invoke();
+            //serialLock.Release();
+            
         }
 
         public async Task SendData(string data)
         {
+            await serialLock.WaitAsync();
             await ConnectMouse(mouseInstance.PortName);
             //sends data to mouse asynchronously
             mouseInstance.PortName.WriteLine(data);
-            await Task.Run(() => Thread.Sleep(500));
-            mouseInstance.PortName.WriteLine("<FIN>");
-            await Task.Run(() => Disconnect());
+            await Task.Delay(500);
+            mouseInstance.PortName.WriteLine(data);
+            //await Task.Run(() => Disconnect());
+            serialLock.Release();
             return;
         }
 
-        public async Task<string> ReceiveData(string sentData)
+        public async void ReceiveData(object sender, SerialDataReceivedEventArgs e)
         {
-            string dataReceived = "";
-            await ConnectMouse(mouseInstance.PortName);
-            //asynchronously receives data from mouse. 
+
+            await serialLock.WaitAsync();
+            SerialPort serialPort = mouseInstance.PortName;
+            serialPort.DataReceived -= ReceiveData;
+            if (!serialPort.IsOpen)
+            {
+                serialPort.Open();
+            }
             try
             {
-                dataReceived = mouseInstance.PortName.ReadLine();
-            }
-            catch(TimeoutException ex)
+                
+                response = serialPort.ReadLine();
+                OnDataReceived?.Invoke();
+            } catch(TimeoutException ex)
             {
-                await Task.Run(() => Disconnect());
-                mouseInstance.PortName.Open();
-                await SendData(sentData);
-                dataReceived = mouseInstance.PortName.ReadLine();
+
             }
             finally
-            {
-                if (dataReceived != "")
-                {
-                    OnDataReceived?.Invoke();
-                }
-                await Task.Run(() => Disconnect());
-            }
-            
+            { 
 
-            return dataReceived;
+                serialLock.Release();
+                await Task.Run(() => Disconnect());
+                
+            }
+ 
         }
 
         public async void Disconnect()
         {
+            await serialLock?.WaitAsync();
             await Task.Run(() => mouseInstance.PortName.Close());
+            serialLock.Release();
             return;
         }
     }

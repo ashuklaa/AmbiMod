@@ -18,8 +18,8 @@
 
 #define is_pressed LOW
 
-char[] mouse_keys = {MOUSE_LEFT, MOUSE_RIGHT, MOUSE_MIDDLE};
-char[] keyboard_modifiers = {KEY_LEFT_CTRL, KEY_LEFT_SHIFT, KEY_LEFT_ALT, KEY_LEFT_GUI, KEY_RIGHT_CTRL, KEY_RIGHT_SHIFT, 
+std::vector<char> mouse_keys = {MOUSE_LEFT, MOUSE_RIGHT, MOUSE_MIDDLE};
+std::vector<char> keyboard_modifiers = {KEY_LEFT_CTRL, KEY_LEFT_SHIFT, KEY_LEFT_ALT, KEY_LEFT_GUI, KEY_RIGHT_CTRL, KEY_RIGHT_SHIFT, 
                       KEY_RIGHT_ALT, KEY_RIGHT_GUI, KEY_TAB, KEY_CAPS_LOCK, KEY_BACKSPACE, KEY_RETURN, KEY_MENU,
                       KEY_INSERT, KEY_DELETE, KEY_HOME, KEY_END, KEY_PAGE_UP, KEY_PAGE_DOWN, KEY_UP_ARROW, 
                       KEY_DOWN_ARROW, KEY_LEFT_ARROW, KEY_RIGHT_ARROW, KEY_NUM_LOCK, KEY_KP_SLASH, KEY_KP_ASTERISK,
@@ -28,11 +28,11 @@ char[] keyboard_modifiers = {KEY_LEFT_CTRL, KEY_LEFT_SHIFT, KEY_LEFT_ALT, KEY_LE
                       KEY_F3, KEY_F4, KEY_F5, KEY_F6, KEY_F7, KEY_F8, KEY_F9, KEY_F10, KEY_F11, KEY_F12, KEY_F13,
                       KEY_F14, KEY_F15, KEY_F16, KEY_F17, KEY_F18, KEY_F19, KEY_F20, KEY_F21, KEY_F22, KEY_F23,
                       KEY_F24, KEY_PRINT_SCREEN, KEY_SCROLL_LOCK, KEY_PAUSE};
-char[] keyboard_alpha = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+std::vector<char> keyboard_alpha = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
                         'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-char[] keyboard_num = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
-char[] keyboard_symbols_ns = {'`', '-', '=', '[', ']', '\\', ';', '\'', ',', '.', '/'};
-char[] keyboard_symbols_s = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '\"', '<', '>', '?'};
+std::vector<char> keyboard_num = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
+std::vector<char> keyboard_symbols_ns = {'`', '-', '=', '[', ']', '\\', ';', '\'', ',', '.', '/'};
+std::vector<char> keyboard_symbols_s = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '\"', '<', '>', '?'};
 
 Hashtable<char, std::string> mouse_keyboard_keys;
 
@@ -65,8 +65,8 @@ const int MOUSE_12 = 10;
 const int FINGERPRINT_SENSOR = 15;
 
 // PMW3360 Sensor :: https://github.com/SunjunKim/PMW3360/tree/master
-PMW3360 sensor;
-Adafruit_Fingerprint finger = Adafruit_Fingerprint();
+//PMW3360 sensor;
+//Adafruit_Fingerprint finger = Adafruit_Fingerprint();
 
 // stores the current profile in the mouse
 std::string PROFILE = "DEFAULT";
@@ -146,8 +146,8 @@ void setup()
 
   // begin mouse processes
   Serial.begin(9600);
-  sensor.setCPI(current_dpi);
-  finger.begin(57600);
+  //sensor.setCPI(current_dpi);
+  //finger.begin(57600);
   Keyboard.begin();
   Mouse.begin();
 
@@ -179,7 +179,7 @@ void setup()
   }    
 
   // INITIALIZE HASHTABLE FOR DEFAULT KEYBINDS
-  for (int i = 0; i < button_set.size(); i++) {
+  for (int i = 0; i < sizeof(button_set); i++) {
     button_map.put(button_set[i], button_binds[i]);
   }
 
@@ -190,12 +190,12 @@ void loop()
   read_config(); // keep checking for updates
       
   // callibrate mouse
-  PMW3360_DATA data = sensor.readBurst();
-  if (data.isOnSurface && data.isMotion) {
+  //PMW3360_DATA data = sensor.readBurst();
+  /*if (data.isOnSurface && data.isMotion) {
     int mdx = constrain(data.dx, -127, 127);
     int mdy = constrain(data.dy, -127, 127);
     Mouse.move(mdx, mdy, 0);
-  }
+  }*/
   
 }
 
