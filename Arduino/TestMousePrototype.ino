@@ -199,19 +199,19 @@ void loop()
   
 }
 
-  // split string by a given delimiter
-  std::vector<string> split(std::string str, std::string delimiter) {
+// split string by a given delimiter
+std::vector<std::string> split(std::string str, std::string delimiter) {
 
   std::stringstream ss(str);
-  std::vector<std:string> config;
-  string token;
+  std::vector<std::string> config;
+  std::string token;
   while (getline(ss, token, delimiter)) {
     config.push_back(token);
   }
   return config;
 }
 
-,std::vector<char> string_to_mk_char(std::string str) {
+std::vector<char> string_to_mk_char(std::string str) {
 
   std::string macro_delimiter = "+";
   std::vector<std::string> temp_keybinds = split(str, macro_delimiter);
@@ -370,6 +370,16 @@ void read_config() {
   }
 }
 
+std::string keybind_to_string(char button, std::vector<char> keybinds) {
+
+  std::string keybind_string = "";
+
+
+
+  return keybind_string = "";
+
+}
+
 void config_test() {
 
   if (Serial.available() > 0) {
@@ -391,10 +401,11 @@ void config_test() {
     // LEFT_CLICK
     current_config += "LEFT_CLICK:";
     for(int i = 0; i < button_binds[0].size(); i++) {
-      
+      current_config += 
     }
     current_config += ";";
 
+    current_config += "RIGHT_CLICK";
 
 
 
