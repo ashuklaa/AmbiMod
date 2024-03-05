@@ -1,35 +1,50 @@
 ﻿@using System.IO;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
 @inject ISerialCommsManager SerialCommsManager
 @inject IJSRuntime JSRuntime
 @page "/Profile1"
 
 <h3>Profiles</h3>
 
-<h3>Key Configuration - Profile 1</h3>
+<h3>
+    Key Configuration - <select @onchange="LoadProfile">
+        @foreach (var profile in profileNames)
+        {
+            <option value="@profile">@profile</option>
+        }
+    </select>
+</h3>
 
-<select @onchange="LoadProfile">
-    @foreach (var profile in profileNames)
-    {
-        <option value="@profile">@profile</option>
-    }
-</select>
+
 
 <main class="layoutcontainer">
+
     <section class="top-config">
         <section class="m1-sL-m4-m5">   <!--section for Left Mouse Buttons (M1,M3, ScWheel Left)-->
-            <p>Left Mouse Button&nbsp;<input type="text" placeholder="M1" value="@keybinds["M1"]"></p>
-            <p>Scroll Wheel Left&nbsp;<input type="text" placeholder="SWL" /></p>
+            <p>Left Mouse Button&nbsp;<input type="text" placeholder="M1" @onchange="@(e => UpdateKeybind("LEFT_CLICK", e))" value="@keybinds["LEFT_CLICK"]"></p>
             <div class="midalign"><p>Left Side Panel</p><span></span></div>
-            <p>Side Mouse Button 1&nbsp;<input type="text" placeholder="M4" value="@keybinds["M4"]"/></p>
-            <p>Side Mouse Button 2&nbsp;<input type="text" placeholder="M5" value="@keybinds["M5"]" /></p>
+            <div class="sideButtonGrid">
+                <p>&nbsp;M4&nbsp;&nbsp;<input type="text" placeholder="M4" @onchange="@(e => UpdateKeybind("MOUSE_4", e))" value="@keybinds["MOUSE_4"]" /></p>
+                <p>&nbsp;M5&nbsp;&nbsp;<input type="text" placeholder="M5" @onchange="@(e => UpdateKeybind("MOUSE_5", e))" value="@keybinds["MOUSE_5"]" /></p>
+                <p>&nbsp;M6&nbsp;&nbsp;<input type="text" placeholder="M6" @onchange="@(e => UpdateKeybind("MOUSE_6", e))" value="@keybinds["MOUSE_6"]" /></p>
+                <p>&nbsp;M7&nbsp;&nbsp;<input type="text" placeholder="M7" @onchange="@(e => UpdateKeybind("MOUSE_7", e))" value="@keybinds["MOUSE_7"]" /></p>
+                <p>&nbsp;M8&nbsp;&nbsp;<input type="text" placeholder="M8" @onchange="@(e => UpdateKeybind("MOUSE_8", e))" value="@keybinds["MOUSE_8"]" /></p>
+                <p>&nbsp;M9&nbsp;&nbsp;<input type="text" placeholder="M9" @onchange="@(e => UpdateKeybind("MOUSE_9", e))" value="@keybinds["MOUSE_9"]" /></p>
+                <p>M10&nbsp;<input type="text" placeholder="M10" @onchange="@(e => UpdateKeybind("MOUSE_10", e))" value="@keybinds["MOUSE_10"]" /></p>
+                <p>M11&nbsp;<input type="text" placeholder="M11" @onchange="@(e => UpdateKeybind("MOUSE_11", e))" value="@keybinds["MOUSE_11"]" /></p>
+                <p>M12&nbsp;<input type="text" placeholder="M12" @onchange="@(e => UpdateKeybind("MOUSE_12", e))" value="@keybinds["MOUSE_12"]" /></p>
+            </div>
+
+
         </section>
         <section class="mPic-dbnce">    <!--image of mouse, debounce delay textbox-->
+            <p>M3&nbsp;<input type="text" placeholder="M3" @onchange="@(e => UpdateKeybind("MIDDLE_CLICK", e))" value="@keybinds["MIDDLE_CLICK"]" /></p>
             <img height="75%" src="data:image/jpeg;base64,@b64Mouse" />
-            <p>Debounce Delay&nbsp;<input type="text" placeholder="50ms" /></p>
+            <p>Debounce Delay&nbsp;<input type="text" placeholder="50ms" @bind="msDebounce"/></p>
         </section>
         <section class="m2-sR-m3">      <!--section for Right Mouse Buttons (M2, M3, ScWheel Right)-->
-            <p>Right Mouse Button&nbsp;<input type="text" placeholder="M2" value="@keybinds["M2"]" /></p>
-            <p>Scroll Wheel Right&nbsp;<input type="text" placeholder="SWR" /></p>
+            <p>Right Mouse Button&nbsp;<input type="text" placeholder="M2" @onchange="@(e => UpdateKeybind("RIGHT_CLICK", e))" value="@keybinds["RIGHT_CLICK"]" /></p>
             <p>&nbsp;</p>
             <p>&nbsp;</p>
             <p>&nbsp;</p>
@@ -41,18 +56,14 @@
             <button @onclick="SaveProfileAsync">Send to Mouse</button>
         </aside>
         <section class="dpi-scale">     <!--DPI Slider-->
-            <aside>DPI: @DPI &nbsp;</aside>
-            <p>
-                <input type="range" min="0" max="8000" step="1" @bind="DPI" @bind:event="oninput" />
-            </p>
-            <div class="slider-labels">
-                <span>0</span>
-                <span>400</span>
-                <span>800</span>
-                <span>1600</span>
-                <span>5000</span>
-                <span>8000</span>
-            </div>
+            <aside>Set DPI: @DPI&nbsp;</aside>
+            <section class="dpiSet">
+                <p>Preset 1 <input type="text" placeholder="400" @bind=DPI_SET[0]/></p>
+                <p>Preset 2 <input type="text" placeholder="800" @bind=DPI_SET[1] /></p>
+                <p>Preset 3 <input type="text" placeholder="1200" @bind=DPI_SET[2] /></p>
+                <p>Preset 4 <input type="text" placeholder="1600" @bind=DPI_SET[3] /></p>
+                <p>Preset 5 <input type="text" placeholder="2000" @bind=DPI_SET[4] /></p>
+            </section>
         </section>
     </section>
     
@@ -62,9 +73,9 @@
 
     private string ProfileName = "";
     private int DPI = 0;
-    private string[] DPI_SET = { "0" };
+    public string[] DPI_SET = new string[5];
     private int msDebounce = 0;
-    private Dictionary<string, string> keybinds;
+    private Dictionary<string, JToken> keybinds;
 
 
     private List<string> keys = new List<string> { "LEFT_CLICK", "RIGHT_CLICK", "MIDDLE_CLICK", "MOUSE_4", "MOUSE_5", "MOUSE_6", "MOUSE_7", "MOUSE_8", "MOUSE_9", "MOUSE_10", "MOUSE_11", "MOUSE_12" };
@@ -77,9 +88,9 @@
     private string selectedProfileName;
     Profiles curProfile;
     Profiles selProfile;
-    protected override void OnInitialized()
+    protected override async void OnInitialized()
     {
-        keybinds = keys.ToDictionary(key => key, key => (string)null);
+        keybinds = keys.ToDictionary(key => key, key => (JToken)null);
         var appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Modulify", "Data\\Profiles");
 
         if (Directory.Exists(appDataPath))
@@ -88,6 +99,7 @@
 
             profileNames = files.Select(Path.GetFileNameWithoutExtension).ToList();
         }
+        selectedProfile = profileNames.First();
 
         // SerialCommsManager.OnMouseConnected += GetProfile;
         // try
@@ -98,6 +110,10 @@
         // {
         //     Console.WriteLine($"{ex.Message}");
         //}
+    }
+    void UpdateKeybind(string key, ChangeEventArgs e)
+    {
+        keybinds[key] = e.Value.ToString();
     }
     private async Task SaveProfileAsync()
     {
@@ -125,7 +141,7 @@
         SaveToJSON(profileName, DPI, DPI_SET, msDebounce, keybinds); // Pass the profileName to save method.
     }
 
-    private void SaveToJSON(string profileName, int DPI, string[] DPI_SET, int debounce, Dictionary<string, string> keybinds)
+    private void SaveToJSON(string profileName, int DPI, string[] DPI_SET, int debounce, Dictionary<string, JToken> keybinds)
     {
         Profiles tempProfile = new Profiles(profileName, Convert.ToString(DPI), DPI_SET, Convert.ToString(msDebounce), keybinds);
         tempProfile.SaveToJSON();
@@ -134,12 +150,14 @@
     private void LoadProfile(ChangeEventArgs e)
     {
         selectedProfileName = e.Value.ToString();
-        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "YourAppName", "Data\\Profiles", $"{selectedProfileName}.json");
+        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Modulify", "Data\\Profiles", $"{selectedProfileName}.json");
         if (File.Exists(filePath))
         {
             selProfile = new Profiles(selectedProfileName);
             ProfileName = selProfile.ProfileName;
             DPI = Convert.ToInt32(selProfile.DPI);
+            DPI_SET = selProfile.DPI_SET;
+            msDebounce = Convert.ToInt32(selProfile.DEBOUNCE);
             keybinds = selProfile.Keybinds;
             InvokeAsync(StateHasChanged); // Update the UI with the new profile
         }

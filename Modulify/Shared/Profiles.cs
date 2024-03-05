@@ -22,9 +22,9 @@ namespace Modulify.Shared
         public string DEBOUNCE { get; set; }
 
         [Newtonsoft.Json.JsonExtensionData]
-        public Dictionary<string, string> Keybinds { get; set; }
+        public Dictionary<string, JToken> Keybinds { get; set; }
 
-        public Profiles(string profName, string dpiValue, string[] dpiSet, string debounce, Dictionary<string, string> keybinds)
+        public Profiles(string profName, string dpiValue, string[] dpiSet, string debounce, Dictionary<string, JToken> keybinds)
         {
             ProfileName = profName;
             DPI = dpiValue;
@@ -35,7 +35,7 @@ namespace Modulify.Shared
 
         public Profiles(string jsonFileName) 
         {
-            Keybinds = new Dictionary<string, string>();
+            Keybinds = new Dictionary<string, JToken>();
 
             this.CreateProfileObject(jsonFileName);
         }
@@ -102,7 +102,7 @@ namespace Modulify.Shared
             jsonObj.Remove("DEBOUNCE");
 
             //add keybinds from json file into a dictionary
-            this.Keybinds = jsonObj.ToObject<Dictionary<string, string>>();  
+            this.Keybinds = jsonObj.ToObject<Dictionary<string, JToken>>();  
 
         }
 
