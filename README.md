@@ -6,7 +6,7 @@ Project Brief:
 Mouse inputs (Left, Right, Middle + Optical sensor movements) will be sent via HID (Mouse.h).
 M4-M12 will be sent via HID (Keyboard.h). Companion app will not handle either of these, as HID interfaces directly with OS. 
 
-When first being plugged into the computer, mouse will briefly establish a Serial (COM Port) connection to the PC. This may require the Arduino to disable HID connection momentarily (unsure). 
+When first being plugged into the computer, mouse will briefly establish a Serial (COM Port) connection to the PC. This may require the Arduino to disable HID connection momentarily. 
 
 Over this COM port, the keybinds for M4-M12 will be loaded into the companion app for the user to see. After companion app sends back a "confirm" signal over Serial, Arduino will close COM connection, and HID should automatically reestablish to send keystrokes. 
 
