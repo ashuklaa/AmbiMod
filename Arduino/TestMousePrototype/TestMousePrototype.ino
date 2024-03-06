@@ -592,6 +592,21 @@ void config_test() {
 
 }
 
+void send_profile() {
+  if (Serial.available() > 0) {
+    std::string connection_confirmation = Serial.readString();
+
+    if (connection_confirmation == "Good Night") {
+      Serial.write("Chat");
+
+      connection_confirmation = Serial.readString();
+      if (connection_confirmation == "What profile?") {
+        Serial.write(PROFILE);
+      }
+
+    }
+  }
+}
 
 
 
@@ -646,7 +661,8 @@ void button_press(int pin) {
 // MAIN LOOP
 void loop()
 {
-
+  
+  send_profile();
   read_config(); // keep checking for updates
       
   // callibrate mouse
