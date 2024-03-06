@@ -72,7 +72,7 @@ const int FINGERPRINT_SENSOR = 15;
 std::string PROFILE = "DEFAULT";
 
 // CONFIG DATA
-std::vector<int> dpi_values{800, 1200, 1600, 2400, 5000}; // default values
+std::vector<int> dpi_values = {800, 1200, 1600, 2400, 5000}; // default values
 int current_dpi = 800; // default dpi
   // default button values
     // int = pin number
@@ -82,7 +82,13 @@ int current_dpi = 800; // default dpi
 std::vector<int> button_set = {LEFT_CLICK, RIGHT_CLICK, MIDDLE_CLICK, MOUSE_4, MOUSE_5, MOUSE_6, MOUSE_7, MOUSE_8, MOUSE_9, MOUSE_10, MOUSE_11, MOUSE_12};
 std::vector<char> button_binds[] = {{MOUSE_LEFT}, {MOUSE_RIGHT}, {MOUSE_MIDDLE}, {KEY_LEFT_ALT, KEY_RIGHT_ARROW}, {KEY_LEFT_ALT, KEY_LEFT_ARROW}, {'I'}, {'n'}, {'a'}, {'\''}, {'n'}, {'i'}, {'s'}};
 
+// FOR STORED PROFILE OF EACH BUTTON
 Hashtable<int, std::vector<char>> button_map;
+
+// FOR CONFIG CONVERSIONS
+Hashtable<std::string, char> config_string_to_char;
+Hashtable<char, std::string> config_char_to_string;
+Hashtable<std::string, int> button_str_to_pin;
 
 /*{
   {LEFT_CLICK, {MOUSE_LEFT}},
@@ -140,8 +146,8 @@ void setup()
   pinMode(MOUSE_10, INPUT_PULLUP);
   pinMode(MOUSE_11, INPUT_PULLUP);
   pinMode(MOUSE_12, INPUT_PULLUP);
-  pinMode(MOUSE_X, INPUT);
-  pinMode(MOUSE_Y, INPUT);
+  // pinMode(MOUSE_X, INPUT);
+  // pinMode(MOUSE_Y, INPUT);
 
 
   // begin mouse processes
@@ -178,6 +184,162 @@ void setup()
     mouse_keyboard_keys.put(keyboard_symbols_s[i], "KEYBOARD");
   }    
 
+  // INITIALIZE HASHTABLE FOR STRING TO CHAR CONVERSIONS
+  config_string_to_char.put("MOUSE_LEFT", MOUSE_LEFT);
+  config_string_to_char.put("MOUSE_RIGHT", MOUSE_RIGHT);
+  config_string_to_char.put("MOUSE_MIDDLE", MOUSE_MIDDLE);
+    // KEYBOARD MODIFIERS
+  config_string_to_char.put("KEY_LEFT_CTRL", KEY_LEFT_CTRL);
+  config_string_to_char.put("KEY_LEFT_SHIFT", KEY_LEFT_SHIFT);
+  config_string_to_char.put("KEY_LEFT_ALT", KEY_LEFT_ALT);
+  config_string_to_char.put("KEY_LEFT_GUI", KEY_LEFT_GUI);
+  config_string_to_char.put("KEY_RIGHT_CTRL", KEY_RIGHT_CTRL);
+  config_string_to_char.put("KEY_RIGHT_SHIFT", KEY_RIGHT_SHIFT);
+  config_string_to_char.put("KEY_RIGHT_ALT", KEY_RIGHT_ALT);
+  config_string_to_char.put("KEY_RIGHT_GUI", KEY_RIGHT_GUI);
+    // KEYBOARD - SPECIAL KEYS
+  config_string_to_char.put("KEY_TAB", KEY_TAB);
+  config_string_to_char.put("KEY_CAPS_LOCK", KEY_CAPS_LOCK);
+  config_string_to_char.put("KEY_BACKSPACE", KEY_BACKSPACE);
+  config_string_to_char.put("KEY_RETURN", KEY_RETURN);
+  config_string_to_char.put("KEY_MENU", KEY_MENU);
+    // KEYBOARD - NAVIGATION CLUSTER
+  config_string_to_char.put("KEY_INSERT", KEY_INSERT);
+  config_string_to_char.put("KEY_DELETE", KEY_DELETE);
+  config_string_to_char.put("KEY_HOME", KEY_HOME);
+  config_string_to_char.put("KEY_END", KEY_END);
+  config_string_to_char.put("KEY_PAGE_UP", KEY_PAGE_UP);
+  config_string_to_char.put("KEY_PAGE_DOWN", KEY_PAGE_DOWN);
+  config_string_to_char.put("KEY_UP_ARROW", KEY_UP_ARROW);
+  config_string_to_char.put("KEY_DOWN_ARROW", KEY_DOWN_ARROW);
+  config_string_to_char.put("KEY_LEFT_ARROW", KEY_LEFT_ARROW);
+  config_string_to_char.put("KEY_RIGHT_ARROW", KEY_RIGHT_ARROW);
+    // KEYBOARD - NUMERIC KEYPAD
+  config_string_to_char.put("KEY_NUM_LOCK", KEY_NUM_LOCK);
+  config_string_to_char.put("KEY_KP_SLASH", KEY_KP_SLASH);
+  config_string_to_char.put("KEY_KP_ASTERISK", KEY_KP_ASTERISK);
+  config_string_to_char.put("KEY_KP_MINUS", KEY_KP_MINUS);
+  config_string_to_char.put("KEY_KP_PLUS", KEY_KP_PLUS);
+  config_string_to_char.put("KEY_KP_ENTER", KEY_KP_ENTER);
+  config_string_to_char.put("KEY_KP_1", KEY_KP_1);
+  config_string_to_char.put("KEY_KP_2", KEY_KP_2);
+  config_string_to_char.put("KEY_KP_3", KEY_KP_3);
+  config_string_to_char.put("KEY_KP_4", KEY_KP_4);
+  config_string_to_char.put("KEY_KP_5", KEY_KP_5);
+  config_string_to_char.put("KEY_KP_6", KEY_KP_6);
+  config_string_to_char.put("KEY_KP_7", KEY_KP_7);
+  config_string_to_char.put("KEY_KP_8", KEY_KP_8);
+  config_string_to_char.put("KEY_KP_9", KEY_KP_9);
+  config_string_to_char.put("KEY_KP_0", KEY_KP_0);
+  config_string_to_char.put("KEY_KP_DOT", KEY_KP_DOT);
+  config_string_to_char.put("KEY_ESC", KEY_ESC);
+  config_string_to_char.put("KEY_F1", KEY_F1);
+  config_string_to_char.put("KEY_F2", KEY_F2);
+  config_string_to_char.put("KEY_F3", KEY_F3);
+  config_string_to_char.put("KEY_F4", KEY_F4);
+  config_string_to_char.put("KEY_F5", KEY_F5);
+  config_string_to_char.put("KEY_F6", KEY_F6);
+  config_string_to_char.put("KEY_F7", KEY_F7);
+  config_string_to_char.put("KEY_F8", KEY_F8);
+  config_string_to_char.put("KEY_F9", KEY_F9);
+  config_string_to_char.put("KEY_F10", KEY_F10);
+  config_string_to_char.put("KEY_F11", KEY_F11);
+  config_string_to_char.put("KEY_F12", KEY_F12);
+  config_string_to_char.put("KEY_F13", KEY_F13);
+  config_string_to_char.put("KEY_F14", KEY_F14);
+  config_string_to_char.put("KEY_F15", KEY_F15);
+  config_string_to_char.put("KEY_F16", KEY_F16);
+  config_string_to_char.put("KEY_F17", KEY_F17);
+  config_string_to_char.put("KEY_F18", KEY_F18);
+  config_string_to_char.put("KEY_F19", KEY_F19);
+  config_string_to_char.put("KEY_F20", KEY_F20);
+  config_string_to_char.put("KEY_F21", KEY_F21);
+  config_string_to_char.put("KEY_F22", KEY_F22);
+  config_string_to_char.put("KEY_F23", KEY_F23);
+  config_string_to_char.put("KEY_F24", KEY_F24);
+  config_string_to_char.put("KEY_F24", KEY_F24);
+    // KEYBOARD - FUNCTION CONTROL KEYS
+  config_string_to_char.put("KEY_PRINT_SCREEN", KEY_PRINT_SCREEN);
+  config_string_to_char.put("KEY_SCROLL_LOCK", KEY_SCROLL_LOCK);
+  config_string_to_char.put("KEY_PAUSE", KEY_PAUSE);
+  
+
+
+  // INITIALIZE HASHTABLE FOR CHAR TO STRING CONVERSIONS
+  config_char_to_string.put(MOUSE_LEFT, "MOUSE_LEFT");
+  config_char_to_string.put(MOUSE_RIGHT, "MOUSE_RIGHT");
+  config_char_to_string.put(MOUSE_MIDDLE, "MOUSE_MIDDLE");
+    // KEYBOARD MODIFIERS
+  config_char_to_string.put(KEY_LEFT_CTRL, "KEY_LEFT_CTRL");
+  config_char_to_string.put(KEY_LEFT_SHIFT, "KEY_LEFT_SHIFT");
+  config_char_to_string.put(KEY_LEFT_ALT, "KEY_LEFT_ALT");
+  config_char_to_string.put(KEY_LEFT_GUI, "KEY_LEFT_GUI");
+  config_char_to_string.put(KEY_RIGHT_CTRL, "KEY_RIGHT_CTRL");
+  config_char_to_string.put(KEY_RIGHT_SHIFT, "KEY_RIGHT_SHIFT");
+  config_char_to_string.put(KEY_RIGHT_ALT, "KEY_RIGHT_ALT");
+  config_char_to_string.put(KEY_RIGHT_GUI, "KEY_RIGHT_GUI");
+    // KEYBOARD - SPECIAL KEYS
+  config_char_to_string.put(KEY_TAB, "KEY_TAB");
+  config_char_to_string.put(KEY_CAPS_LOCK, "KEY_CAPS_LOCK");
+  config_char_to_string.put(KEY_BACKSPACE, "KEY_BACKSPACE");
+  config_char_to_string.put(KEY_RETURN, "KEY_RETURN");
+  config_char_to_string.put(KEY_MENU, "KEY_MENU");
+    // KEYBOARD - NAVIGATION CLUSTER
+  config_char_to_string.put(KEY_INSERT, "KEY_INSERT");
+  config_char_to_string.put(KEY_DELETE, "KEY_DELETE");
+  config_char_to_string.put(KEY_HOME, "KEY_HOME");
+  config_char_to_string.put(KEY_END, "KEY_END");
+  config_char_to_string.put(KEY_PAGE_UP, "KEY_PAGE_UP");
+  config_char_to_string.put(KEY_PAGE_DOWN, "KEY_PAGE_DOWN");
+  config_char_to_string.put(KEY_UP_ARROW, "KEY_UP_ARROW");
+  config_char_to_string.put(KEY_DOWN_ARROW, "KEY_DOWN_ARROW");
+  config_char_to_string.put(KEY_LEFT_ARROW, "KEY_LEFT_ARROW");
+  config_char_to_string.put(KEY_RIGHT_ARROW, "KEY_RIGHT_ARROW");
+    // KEYBOARD - NUMERIC KEYPAD
+  config_char_to_string.put(KEY_NUM_LOCK, "KEY_NUM_LOCK");
+  config_char_to_string.put(KEY_KP_SLASH, "KEY_KP_SLASH");
+  config_char_to_string.put(KEY_KP_ASTERISK, "KEY_KP_ASTERISK");
+  config_char_to_string.put(KEY_KP_MINUS, "KEY_KP_MINUS");
+  config_char_to_string.put(KEY_KP_PLUS, "KEY_KP_PLUS");
+  config_char_to_string.put(KEY_KP_ENTER, "KEY_KP_ENTER");
+  config_char_to_string.put(KEY_KP_1, "KEY_KP_1");
+  config_char_to_string.put(KEY_KP_2, "KEY_KP_2");
+  config_char_to_string.put(KEY_KP_3, "KEY_KP_3");
+  config_char_to_string.put(KEY_KP_4, "KEY_KP_4");
+  config_char_to_string.put(KEY_KP_5, "KEY_KP_5");
+  config_char_to_string.put(KEY_KP_6, "KEY_KP_6");
+  config_char_to_string.put(KEY_KP_7, "KEY_KP_7");
+  config_char_to_string.put(KEY_KP_8, "KEY_KP_8");
+  config_char_to_string.put(KEY_KP_9, "KEY_KP_9");
+  config_char_to_string.put(KEY_KP_0, "KEY_KP_0");
+  config_char_to_string.put(KEY_KP_DOT, "KEY_KP_DOT");
+    // FUNCTION KEYS
+  config_char_to_string.put(KEY_ESC, "KEY_ESC");
+  config_char_to_string.put(KEY_F1, "KEY_F1");
+  config_char_to_string.put(KEY_F2, "KEY_F2");
+  config_char_to_string.put(KEY_F3, "KEY_F3");
+  config_char_to_string.put(KEY_F4, "KEY_F4");
+  config_char_to_string.put(KEY_F5, "KEY_F5");
+  config_char_to_string.put(KEY_F6, "KEY_F6");
+  config_char_to_string.put(KEY_F7, "KEY_F7");
+
+
+  // INITIALIZE HASHTABLE FOR STRING BUTTON NAMES TO PINS
+  button_str_to_pin.put("LEFT_CLICK", LEFT_CLICK);
+  button_str_to_pin.put("RIGHT_CLICK", RIGHT_CLICK);
+  button_str_to_pin.put("MIDDLE_CLICK", MIDDLE_CLICK);
+  button_str_to_pin.put("MOUSE_4", MOUSE_4);
+  button_str_to_pin.put("MOUSE_5", MOUSE_5);
+  button_str_to_pin.put("MOUSE_6", MOUSE_6);
+  button_str_to_pin.put("MOUSE_7", MOUSE_7);
+  button_str_to_pin.put("MOUSE_8", MOUSE_8);
+  button_str_to_pin.put("MOUSE_9", MOUSE_9);
+  button_str_to_pin.put("MOUSE_10", MOUSE_10);
+  button_str_to_pin.put("MOUSE_11", MOUSE_11);
+  button_str_to_pin.put("MOUSE_12", MOUSE_12);
+
+
+
   // INITIALIZE HASHTABLE FOR DEFAULT KEYBINDS
   for (int i = 0; i < button_set.size(); i++) {
     button_map.put(button_set[i], button_binds[i]);
@@ -185,7 +347,7 @@ void setup()
 
 }
 
-// split string by a given delimiter
+// split string by a given delimiter, excludes the delimiter
 std::vector<std::string> split(std::string str, char delimiter) {
   
   std::vector<std::string> config;
@@ -196,15 +358,11 @@ std::vector<std::string> split(std::string str, char delimiter) {
   for (int i = 0; i < str.length(); i++) {
     // when delimiter is found, reset temp string and add previous temp value to config vector
     if (str[i] == delimiter) {
-
       config.push_back(temp);
       temp = "";
-
     } 
     else { // add character to temp string
-    
       temp += str[i];
-    
     }
   }
 
@@ -212,227 +370,22 @@ std::vector<std::string> split(std::string str, char delimiter) {
 }
 
 // CONFIG RETURN HELPERS
-// for the char to string
-std::string mk_keybind_to_string(char button) {
-
-    switch(button){
-      case MOUSE_LEFT: return "MOUSE_LEFT";
-      case MOUSE_RIGHT: return "MOUSE_RIGHT";
-      case MOUSE_MIDDLE: return "MOUSE_MIDDLE";
-        // KEYBOARD MODIFIERS
-      case KEY_LEFT_CTRL: return "KEY_LEFT_CTRL";
-      case KEY_LEFT_SHIFT: return "KEY_LEFT_SHIFT";
-      case KEY_LEFT_ALT: return "KEY_LEFT_ALT";
-      case KEY_LEFT_GUI: return "KEY_LEFT_GUI";
-      case KEY_RIGHT_CTRL: return "KEY_RIGHT_CTRL";
-      case KEY_RIGHT_SHIFT: return "KEY_RIGHT_SHIFT";
-      case KEY_RIGHT_ALT: return "KEY_RIGHT_ALT";
-      case KEY_RIGHT_GUI: return "KEY_RIGHT_GUI";
-        // KEYBOARD - SPECIAL KEYS
-      case KEY_TAB: return "KEY_TAB";
-      case KEY_CAPS_LOCK: return "KEY_CAPS_LOCK";
-      case KEY_BACKSPACE: return "KEY_BACKSPACE";
-      case KEY_RETURN: return "KEY_RETURN";
-      case KEY_MENU: return "KEY_MENU";
-        // KEYBOARD - NAVIGATION CLUSTER
-      case KEY_INSERT: return "KEY_INSERT";
-      case KEY_DELETE: return "KEY_DELETE";
-      case KEY_HOME: return "KEY_HOME";
-      case KEY_END: return "KEY_END";
-      case KEY_PAGE_UP: return "KEY_PAGE_UP";
-      case KEY_PAGE_DOWN: return "KEY_PAGE_DOWN";
-      case KEY_UP_ARROW: return "KEY_UP_ARROW";
-      case KEY_DOWN_ARROW: return "KEY_DOWN_ARROW";
-      case KEY_LEFT_ARROW: return "KEY_LEFT_ARROW";
-      case KEY_RIGHT_ARROW: return "KEY_RIGHT_ARROW";
-        // KEYBOARD - NUMERIC KEYPAD
-      case KEY_NUM_LOCK: return "KEY_NUM_LOCK";
-      case KEY_KP_SLASH: return "KEY_KP_SLASH";
-      case KEY_KP_ASTERISK: return "KEY_KP_ASTERISK";
-      case KEY_KP_MINUS: return "KEY_KP_MINUS";
-      case KEY_KP_PLUS: return "KEY_KP_PLUS";
-      case KEY_KP_ENTER: return "KEY_KP_ENTER";
-      case KEY_KP_1: return "KEY_KP_1";
-      case KEY_KP_2: return "KEY_KP_2";
-      case KEY_KP_3: return "KEY_KP_3";
-      case KEY_KP_4: return "KEY_KP_4";
-      case KEY_KP_5: return "KEY_KP_5";
-      case KEY_KP_6: return "KEY_KP_6";
-      case KEY_KP_7: return "KEY_KP_7";
-      case KEY_KP_8: return "KEY_KP_8";
-      case KEY_KP_9: return "KEY_KP_9";
-      case KEY_KP_0: return "KEY_KP_0";
-      case KEY_KP_DOT: return "KEY_KP_DOT";
-        // KEYBOARD - ESCAPE AND FUNCTION KEYS
-      case KEY_ESC: return "KEY_ESC";
-      case KEY_F1: return "KEY_F1";
-      case KEY_F2: return "KEY_F2";
-      case KEY_F3: return "KEY_F3";
-      case KEY_F4: return "KEY_F4";
-      case KEY_F5: return "KEY_F5";
-      case KEY_F6: return "KEY_F6";
-      case KEY_F7: return "KEY_F7";
-      case KEY_F8: return "KEY_F8";
-      case KEY_F9: return "KEY_F9";
-      case KEY_F10: return "KEY_F10";
-      case KEY_F11: return "KEY_F11";
-      case KEY_F12: return "KEY_F12";
-      case KEY_F13: return "KEY_F13";
-      case KEY_F14: return "KEY_F14";
-      case KEY_F15: return "KEY_F15";
-      case KEY_F16: return "KEY_F16";
-      case KEY_F17: return "KEY_F17";
-      case KEY_F18: return "KEY_F18";
-      case KEY_F19: return "KEY_F19";
-      case KEY_F20: return "KEY_F20";
-      case KEY_F21: return "KEY_F21";
-      case KEY_F22: return "KEY_F22";
-      case KEY_F23: return "KEY_F23";
-      case KEY_F24: return "KEY_F24";
-        // KEYBOARD - FUNCTION CONTROL KEYS
-      case KEY_PRINT_SCREEN: return "KEY_PRINT_SCREEN";
-      case KEY_SCROLL_LOCK: return "KEY_SCROLL_LOCK";
-      case KEY_PAUSE: return "KEY_PAUSE";
-    }
-
-}
-
-// for buttons to strings
-std::string button_pin_to_string(int button) {
-
-  switch(button) {
-    case LEFT_CLICK: return "LEFT_CLICK";
-    case RIGHT_CLICK: return "RIGHT_CLICK";
-    case MIDDLE_CLICK: return "MIDDLE_CLICK";
-    case MOUSE_4: return "MOUSE_4";
-    case MOUSE_5: return "MOUSE_5";
-    case MOUSE_6: return "MOUSE_6";
-    case MOUSE_7: return "MOUSE_7";
-    case MOUSE_8: return "MOUSE_8";
-    case MOUSE_9: return "MOUSE_9";
-    case MOUSE_10: return "MOUSE_10";
-    case MOUSE_11: return "MOUSE_11";
-    case MOUSE_12: return "MOUSE_12";
-  }
-
-}
-
-
-// CONFIG READ HELPERS
-// convert string from config to char value & add to vector
-std::vector<char> string_to_mk_char(std::string str) {
-
-  char macro_delimiter = '+';
-  std::vector<std::string> temp_keybinds = split(str, macro_delimiter);
-  std::vector<char> keybinds;
-
-  for (int i = 0; i < temp_keybinds.size(); i++) {
-
-    switch (temp_keybinds[i]) {
-        // MOUSE
-      case "MOUSE_LEFT": keybinds.push_back(MOUSE_LEFT);
-      case "MOUSE_RIGHT": keybinds.push_back(MOUSE_RIGHT);
-      case "MOUSE_MIDDLE": keybinds.push_back(MOUSE_MIDDLE);
-        // KEYBOARD MODIFIERS
-      case "KEY_LEFT_CTRL": keybinds.push_back(KEY_LEFT_CTRL);
-      case "KEY_LEFT_SHIFT": keybinds.push_back(KEY_LEFT_SHIFT);
-      case "KEY_LEFT_ALT": keybinds.push_back(KEY_LEFT_ALT);
-      case "KEY_LEFT_GUI": keybinds.push_back(KEY_LEFT_GUI);
-      case "KEY_RIGHT_CTRL": keybinds.push_back(KEY_RIGHT_CTRL);
-      case "KEY_RIGHT_SHIFT": keybinds.push_back(KEY_RIGHT_SHIFT);
-      case "KEY_RIGHT_ALT": keybinds.push_back(KEY_RIGHT_ALT);
-      case "KEY_RIGHT_GUI": keybinds.push_back(KEY_RIGHT_GUI);
-        // KEYBOARD - SPECIAL KEYS
-      case "KEY_TAB": keybinds.push_back(KEY_TAB);
-      case "KEY_CAPS_LOCK": keybinds.push_back(KEY_CAPS_LOCK);
-      case "KEY_BACKSPACE": keybinds.push_back(KEY_BACKSPACE);
-      case "KEY_RETURN": keybinds.push_back(KEY_RETURN);
-      case "KEY_MENU": keybinds.push_back(KEY_MENU);
-        // KEYBOARD - NAVIGATION CLUSTER
-      case "KEY_INSERT": keybinds.push_back(KEY_INSERT);
-      case "KEY_DELETE": keybinds.push_back(KEY_DELETE);
-      case "KEY_HOME": keybinds.push_back(KEY_HOME);
-      case "KEY_END": keybinds.push_back(KEY_END);
-      case "KEY_PAGE_UP": keybinds.push_back(KEY_PAGE_UP);
-      case "KEY_PAGE_DOWN": keybinds.push_back(KEY_PAGE_DOWN);
-      case "KEY_UP_ARROW": keybinds.push_back(KEY_UP_ARROW);
-      case "KEY_DOWN_ARROW": keybinds.push_back(KEY_DOWN_ARROW);
-      case "KEY_LEFT_ARROW": keybinds.push_back(KEY_LEFT_ARROW);
-      case "KEY_RIGHT_ARROW": keybinds.push_back(KEY_RIGHT_ARROW);
-        // KEYBOARD - NUMERIC KEYPAD
-      case "KEY_NUM_LOCK": keybinds.push_back(KEY_NUM_LOCK);
-      case "KEY_KP_SLASH": keybinds.push_back(KEY_KP_SLASH);
-      case "KEY_KP_ASTERISK": keybinds.push_back(KEY_KP_ASTERISK);
-      case "KEY_KP_MINUS": keybinds.push_back(KEY_KP_MINUS);
-      case "KEY_KP_PLUS": keybinds.push_back(KEY_KP_PLUS);
-      case "KEY_KP_ENTER": keybinds.push_back(KEY_KP_ENTER);
-      case "KEY_KP_1": keybinds.push_back(KEY_KP_1);
-      case "KEY_KP_2": keybinds.push_back(KEY_KP_2);
-      case "KEY_KP_3": keybinds.push_back(KEY_KP_3);
-      case "KEY_KP_4": keybinds.push_back(KEY_KP_4);
-      case "KEY_KP_5": keybinds.push_back(KEY_KP_5);
-      case "KEY_KP_6": keybinds.push_back(KEY_KP_6);
-      case "KEY_KP_7": keybinds.push_back(KEY_KP_7);
-      case "KEY_KP_8": keybinds.push_back(KEY_KP_8);
-      case "KEY_KP_9": keybinds.push_back(KEY_KP_9);
-      case "KEY_KP_0": keybinds.push_back(KEY_KP_0);
-      case "KEY_KP_DOT": keybinds.push_back(KEY_KP_DOT);
-        // KEYBOARD - ESCAPE AND FUNCTION KEYS
-      case "KEY_ESC": keybinds.push_back(KEY_ESC);
-      case "KEY_F1": keybinds.push_back(KEY_F1);
-      case "KEY_F2": keybinds.push_back(KEY_F2);
-      case "KEY_F3": keybinds.push_back(KEY_F3);
-      case "KEY_F4": keybinds.push_back(KEY_F4);
-      case "KEY_F5": keybinds.push_back(KEY_F5);
-      case "KEY_F6": keybinds.push_back(KEY_F6);
-      case "KEY_F7": keybinds.push_back(KEY_F7);
-      case "KEY_F8": keybinds.push_back(KEY_F8);
-      case "KEY_F9": keybinds.push_back(KEY_F9);
-      case "KEY_F10": keybinds.push_back(KEY_F10);
-      case "KEY_F11": keybinds.push_back(KEY_F11);
-      case "KEY_F12": keybinds.push_back(KEY_F12);
-      case "KEY_F13": keybinds.push_back(KEY_F13);
-      case "KEY_F14": keybinds.push_back(KEY_F14);
-      case "KEY_F15": keybinds.push_back(KEY_F15);
-      case "KEY_F16": keybinds.push_back(KEY_F16);
-      case "KEY_F17": keybinds.push_back(KEY_F17);
-      case "KEY_F18": keybinds.push_back(KEY_F18);
-      case "KEY_F19": keybinds.push_back(KEY_F19);
-      case "KEY_F20": keybinds.push_back(KEY_F20);
-      case "KEY_F21": keybinds.push_back(KEY_F21);
-      case "KEY_F22": keybinds.push_back(KEY_F22);
-      case "KEY_F23": keybinds.push_back(KEY_F23);
-      case "KEY_F24": keybinds.push_back(KEY_F24);
-        // KEYBOARD - FUNCTION CONTROL KEYS
-      case "KEY_PRINT_SCREEN": keybinds.push_back(KEY_PRINT_SCREEN);
-      case "KEY_SCROLL_LOCK": keybinds.push_back(KEY_SCROLL_LOCK);
-      case "KEY_PAUSE": keybinds.push_back(KEY_PAUSE);
-      // covers the characters on the keyboard
-      case default: keybinds.push_back(char (temp_keybinds[i]));
-    }
-
-  }
-  
-  return keybinds;
-
-}
-
-// FOR KEYBINDS ONLY
+  // FOR KEYBINDS/CONFIGS CONTAINING MORE THAN ONE ELEMENT
 std::string keybind_to_string(int button, std::vector<char> keybinds) {
 
-  std::string keybind_string = "";
+  std::string str_keybind = "";
 
-  for (int i = 0; i < keybinds.size(); i++) {
-    keybind_string += mk_keybind_to_string(keybind[i]);
-    if (i != keybinds.size()-1) { // adds macro delimiter
-      keybind_string += "+"; 
+  std::vector<char> keybind = button_map.getElement(button); // get the value using the button as a key
+
+  for (int i = 0; i < keybind.size(); i++) {
+    str_keybind += config_char_to_string.getElement(keybind[i]);
+    if (i != keybind.size()-1) {
+      str_keybind += "+";
     }
   }
-
-  return keybind_string;
-
+  
+  return str_keybind;
 }
-
 
 // BUTTON READ HELPERS
 // helper function for button reads
@@ -465,16 +418,58 @@ void read_config() {
       std::string button_delimiter = ":";
 
       config = Serial.readString(); // read again for actual mouse configuration
-      std::vector<std::string> config_read = split(config, config_delimiter);
+      std::vector<std::string> config_read = split(config, config_delimiter); // stores each string for each individual button/config into one element in a vector
 
       for (int i = 0; i < config_read.size(); i++) {
 
         std::vector<std::string> button_keybind = split(config_read[i], button_delimiter);
 
-        std::vector<char> button_value = string_to_mk_char(button_keybind[1]); // contains the macro/button mapping
+        // Update Hashtable
+        if (button_keybind[0] == "PROFILE") {
 
-        // switch case updates the keybinds in the Hashtable
-        switch(button_keybind[0]) {
+          PROFILE = button_keybind[1]; // second value stored in vector should be the name of the profile
+
+        } else if (button_keybind[0] == "DPI") {
+          
+          current_dpi = button_keybind[1].toInt(); // converts the string in the vector to an int
+
+        } else if (button_keybind[0] == "DPI_SET") {
+
+          std::vector<std::string> temp_dpi = split(button_keybind[1], "+"); // split dpi string into vector
+
+          for (int i = 0; i < dpi_values.size(); i++){  // overwrite values into stored config vector
+            dpi_values = temp_dpi[i].toInt();
+          }
+
+        } else if (button_keybind[0] == "DEBOUNCE") {
+
+          DEBOUNCE = button_keybind[1].toInt();
+
+        } else { // for all the buttons
+
+          int designated_button = button_str_to_pin.getElement(button_keybind[0]);
+          std::vector<std::string> temp_button_str = split(button_keybind[1], "+");
+          std::vector<char> temp_keybinds;
+
+          for (int i = 0; i < temp_button_str.size(); i++) { // iterates through each vector element adding it to a temp keybind set
+            if (config_string_to_char.exists(temp_button_str[i])) {
+            temp_keybinds.push_back(config_string_to_char.getElement(temp_button_str[i]));
+            } else {
+              temp_keybinds.push_back(char (temp_button_str[i]));
+            }
+          }
+
+          button_map.put(designated_button, temp_keybinds); // set config
+
+        }
+        
+      }
+    }
+  }
+}
+
+/*
+switch(button_keybind[0]) {
           
           case "PROFILE": PROFILE = button_keybind[1]; // whatever the profile's name is
           case "DPI": current_dpi = button_keybind[1];
@@ -495,10 +490,7 @@ void read_config() {
           case "DEBOUNCE": DEBOUNCE = button_keybind[1];
 
         }
-      }
-    }
-  }
-}
+*/
 
 void config_test() {
 
@@ -654,6 +646,7 @@ void button_press(int pin) {
 // MAIN LOOP
 void loop()
 {
+
   read_config(); // keep checking for updates
       
   // callibrate mouse
