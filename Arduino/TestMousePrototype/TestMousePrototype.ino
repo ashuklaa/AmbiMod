@@ -412,7 +412,7 @@ void read_config() {
 
     // check to verify serial string recieved is from the correct program
     if (config == 'Good Morning') {
-      Serial.write('Gamer'); // send signal back to application
+      Serial.println('Gamer'); // send signal back to application
 
       char config_delimiter = ';';
       char button_delimiter = ':';
