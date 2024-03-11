@@ -18,7 +18,8 @@
 
 #define is_pressed LOW
 
-SimpleVector<int> mouse_keys = {MOUSE_LEFT, MOUSE_RIGHT, MOUSE_MIDDLE};
+SimpleVector<int> mouse_keys;
+
 SimpleVector<int> keyboard_modifiers = {KEY_LEFT_CTRL, KEY_LEFT_SHIFT, KEY_LEFT_ALT, KEY_LEFT_GUI, KEY_RIGHT_CTRL, KEY_RIGHT_SHIFT, 
                       KEY_RIGHT_ALT, KEY_RIGHT_GUI, KEY_TAB, KEY_CAPS_LOCK, KEY_BACKSPACE, KEY_RETURN, KEY_MENU,
                       KEY_INSERT, KEY_DELETE, KEY_HOME, KEY_END, KEY_PAGE_UP, KEY_PAGE_DOWN, KEY_UP_ARROW, 
@@ -72,7 +73,7 @@ const int FINGERPRINT_SENSOR = 15;
 String PROFILE = "DEFAULT";
 
 // CONFIG DATA
-SimpleVector<int> dpi_values = {800, 1200, 1600, 2400, 5000}; // default values
+SimpleVector<int> dpi_values({800, 1200, 1600, 2400, 5000}); // default values
 int current_dpi = 800; // default dpi
   // default button values
     // int = pin number
