@@ -414,8 +414,8 @@ void read_config() {
     if (config == 'Good Morning') {
       Serial.write('Gamer'); // send signal back to application
 
-      String config_delimiter = ";";
-      String button_delimiter = ":";
+      char config_delimiter = ';';
+      char button_delimiter = ':';
 
       config = Serial.readString(); // read again for actual mouse configuration
       std::vector<String> config_read = split(config, config_delimiter); // stores each string for each individual button/config into one element in a vector
@@ -438,7 +438,7 @@ void read_config() {
           std::vector<String> temp_dpi = split(button_keybind[1], "+"); // split dpi string into vector
 
           for (int i = 0; i < dpi_values.size(); i++){  // overwrite values into stored config vector
-            dpi_values = temp_dpi[i].toInt();
+            dpi_values[i] = temp_dpi[i].toInt();
           }
 
         } else if (button_keybind[0] == "DEBOUNCE") {
@@ -455,7 +455,7 @@ void read_config() {
             if (config_string_to_char.exists(temp_button_str[i])) {
             temp_keybinds.push_back(config_string_to_char.getElement(temp_button_str[i]));
             } else {
-              temp_keybinds.push_back(char (temp_button_str[i]));
+              temp_keybinds.push_back(&temp_button_str[i]);
             }
           }
 
@@ -501,90 +501,90 @@ void config_test() {
     current_config += "PROFILE:" + PROFILE + ";";
 
     // DPI
-    current_config += "DPI:" + std::to_string(current_dpi) + ";";
+    current_config += "DPI:" + String(current_dpi) + ";";
 
     // DPI_SET
     current_config += "DPI_SET:"; 
     for(int i = 0; i < dpi_values.size(); i++) {
-      current_config += std::to_string(dpi_values[i]);
+      current_config += String(dpi_values[i]);
       if (i != dpi_values.size()-1) {
-        current_config += "+"
+        current_config += "+";
       }
     }
     current_config += ";";
 
-    current_config += "DEBOUNCE:" + std::tostring(DEBOUNCE) + ";";
+    current_config += "DEBOUNCE:" + String(DEBOUNCE) + ";";
 
     // LEFT_CLICK
     current_config += "LEFT_CLICK:";
     for(int i = 0; i < button_binds[0].size(); i++) {
-      current_config += keybind_to_string(button_map.getElement(LEFT_CLICK));
+      current_config += keybind_to_string(LEFT_CLICK, button_map.getElement(LEFT_CLICK));
     }
     current_config += ";";
 
     current_config += "RIGHT_CLICK:";
     for(int i = 0; i < button_binds[0].size(); i++) {
-      current_config += keybind_to_string(button_map.getElement(RIGHT_CLICK));
+      current_config += keybind_to_string(RIGHT_CLICK, button_map.getElement(RIGHT_CLICK));
     }
     current_config += ";";
 
     current_config += "MIDDLE_CLICK:";
     for(int i = 0; i < button_binds[0].size(); i++) {
-      current_config += keybind_to_string(button_map.getElement(MIDDLE_CLICK));
+      current_config += keybind_to_string(MIDDLE_CLICK, button_map.getElement(MIDDLE_CLICK));
     }
     current_config += ";";
 
     current_config += "MOUSE_4:";
     for(int i = 0; i < button_binds[0].size(); i++) {
-      current_config += keybind_to_string(button_map.getElement(MOUSE_4));
+      current_config += keybind_to_string(MOUSE_4, button_map.getElement(MOUSE_4));
     }
     current_config += ";";
 
     current_config += "MOUSE_5:";
     for(int i = 0; i < button_binds[0].size(); i++) {
-      current_config += keybind_to_string(button_map.getElement(MOUSE_5));
+      current_config += keybind_to_string(MOUSE_5, button_map.getElement(MOUSE_5));
     }
     current_config += ";";    
 
     current_config += "MOUSE_6:";
     for(int i = 0; i < button_binds[0].size(); i++) {
-      current_config += keybind_to_string(button_map.getElement(MOUSE_6));
+      current_config += keybind_to_string(MOUSE_6, button_map.getElement(MOUSE_6));
     }
     current_config += ";";
 
     current_config += "MOUSE_7:";
     for(int i = 0; i < button_binds[0].size(); i++) {
-      current_config += keybind_to_string(button_map.getElement(MOUSE_7));
+      current_config += keybind_to_string(MOUSE_7, button_map.getElement(MOUSE_7));
     }
     current_config += ";";
   
     current_config += "MOUSE_8:";
     for(int i = 0; i < button_binds[0].size(); i++) {
-      current_config += keybind_to_string(button_map.getElement(MOUSE_8));
+      current_config += keybind_to_string(MOUSE_8, button_map.getElement(MOUSE_8));
     }
     current_config += ";";    
   
     current_config += "MOUSE_9:";
     for(int i = 0; i < button_binds[0].size(); i++) {
-      current_config += keybind_to_string(button_map.getElement(MOUSE_9));
+      current_config += keybind_to_string(MOUSE_9, button_map.getElement(MOUSE_9));
     }
     current_config += ";";
 
     current_config += "MOUSE_10:";
     for(int i = 0; i < button_binds[0].size(); i++) {
-      current_config += keybind_to_string(button_map.getElement(MOUSE_10));
+      current_config += keybind_to_string(MOUSE_10, button_map.getElement(MOUSE_10));
     }
     current_config += ";";
 
     current_config += "MOUSE_11:";
     for(int i = 0; i < button_binds[0].size(); i++) {
-      current_config += keybind_to_string(button_map.getElement(MOUSE_11));
+      current_config += keybind_to_string(MOUSE_11, button_map.getElement(MOUSE_11));
     }
     current_config += ";";   
 
     current_config += "MOUSE_12:";
     for(int i = 0; i < button_binds[0].size(); i++) {
-      current_config += keybind_to_string(button_map.getElement(MOUSE_12));
+      current_config += keybind_to_string(MOUSE_12, button_map.getElement(MOUSE_12));
     }
     current_config += ";";
 
@@ -597,11 +597,11 @@ void send_profile() {
     String connection_confirmation = Serial.readString();
 
     if (connection_confirmation == "Good Night") {
-      Serial.write("Chat");
+      Serial.println("Chat");
 
       connection_confirmation = Serial.readString();
       if (connection_confirmation == "What profile?") {
-        Serial.write(PROFILE);
+        Serial.println(PROFILE);
       }
 
     }

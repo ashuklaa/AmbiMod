@@ -53,7 +53,7 @@
     <section class="bot-config">
         <aside class="mod-detect">      <!--module detection-->
             <button @onclick="SaveProfileAsync">Save Profile</button>
-            <button @onclick="SaveProfileAsync">Send to Mouse</button>
+            <button @onclick="SendProfileToMouse">Send to Mouse</button>
         </aside>
         <section class="dpi-scale">     <!--DPI Slider-->
             <aside>Set DPI: @DPI&nbsp;</aside>
@@ -114,6 +114,13 @@
     void UpdateKeybind(string key, ChangeEventArgs e)
     {
         keybinds[key] = e.Value.ToString();
+    }
+    private async Task SendProfileToMouse()
+    {
+        await Task.Run(() => SaveProfileAsync());
+        MouseInstance connectedMouse = SerialCommsManager.MouseInstance;
+        //connectedMouse.CurrentProfile;
+
     }
     private async Task SaveProfileAsync()
     {
