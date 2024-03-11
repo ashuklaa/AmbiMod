@@ -51,7 +51,7 @@ namespace Modulify.Shared
                               DPI_SET[1] + "+" + 
                               DPI_SET[2] + "+" + 
                               DPI_SET[3] + "+" + 
-                              DPI_SET[4] + "+" +
+                              DPI_SET[4] + ";" +
                 "DEBOUNCE:" + DEBOUNCE;
 
             //run for loop through keybinds dictionary to generate desired string format

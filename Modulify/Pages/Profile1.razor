@@ -84,7 +84,7 @@
 
     private string selectedProfile;
     private List<string> profileNames = new();
-
+    private int returnedStrCtr = 0;
 
 
     private string selectedProfileName;
@@ -120,14 +120,34 @@
     private async Task SendProfileToMouse()
     {
         await Task.Run(() => SaveProfileAsync());
+        await SerialCommsManager.ConnectMouse(SerialCommsManager.MouseInstance.PortName);
         MouseInstance connectedMouse = SerialCommsManager.MouseInstance;
-        //connectedMouse.CurrentProfile;
+        SerialCommsManager.OnDataReceived += DisplayOutputWindow;
+        returnedStrCtr = 0;
+        connectedMouse.CurrentProfile = selProfile;
+        await SerialCommsManager.SendData(connectedMouse.CurrentProfile.StringifyProfile());
+    }
 
+    async void DisplayOutputWindow()
+    {
+        var profiletext = SerialCommsManager.response;
+        if (returnedStrCtr == 0 && profiletext.StartsWith("Profile Received from App:")){
+            returnedStrCtr = 1;
+            var profileTextWindow = await JSRuntime.InvokeAsync<bool>("confirm", profiletext);
+            returnedStrCtr = 0;
+
+        }
+        // if (returnedStrCtr++ == 1){
+        //     var profileTextWindow = await JSRuntime.InvokeAsync<bool>("confirm", profiletext);
+        //     returnedStrCtr = 0;
+        // }
+        
+        return;
     }
     private async Task SaveProfileAsync()
     {
         // Ask for profile name
-        var profileName = await JSRuntime.InvokeAsync<string>("prompt", "Please enter the profile name", "defaultprofile");
+        var profileName = await JSRuntime.InvokeAsync<string>("prompt", "Please enter the profile name", selectedProfileName);
 
         if (string.IsNullOrEmpty(profileName))
         {

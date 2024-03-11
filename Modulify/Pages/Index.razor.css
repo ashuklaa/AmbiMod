@@ -1,0 +1,15 @@
+﻿.layoutContainer{
+    display: flex;
+    flex-direction: column;
+    overflow-wrap: anywhere;
+}
+
+.origMsgInvis{
+    display: hidden; 
+    opacity: 0;
+}
+
+.origMsgVisible{
+    display: flex; 
+    opacity: 1;
+}

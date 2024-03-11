@@ -16,7 +16,7 @@ void loop() {
     if (response == MouseIDENT){
       Serial.println(ResponseIDENT);
     } else if (response.startsWith("ProfileName:")){
-      Serial.println("Profile Sent to Mouse: " + response);
+      Serial.println("Profile Received from App: " + response);
     } else{
       Serial.println(response);
     }

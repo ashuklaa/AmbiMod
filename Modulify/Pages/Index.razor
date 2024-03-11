@@ -4,15 +4,24 @@
 @using System.Text
 @using System.Collections.Generic
 
-<button @onclick="TestSerialConnection">Test Serial Connection</button>
-<p>@message</p>
+<main class="layoutContainer">
+    <button @onclick="TestSerialConnection">Test Serial Connection</button>
+    <p>@message</p>
 
-<button @onclick="EchoConfig">Send Profile to Serial</button>
-<p>@status</p>
+    <button @onclick="EchoConfig">Send Profile to Serial</button>
+    <p class="@origMsg" >Original Sent Message: @sentProfile</p>
+    <p>@status</p>
+
+
+</main>
+
+
 
 @code {
     private string message = "Awaiting mouse connection";
+    private string sentProfile = "";
     private string status = "Awaiting sample profile send...";
+    private string origMsg = "origMsgInvis";
 
     private async void EchoConfig()
     {
@@ -21,11 +30,12 @@
             SerialCommsManager.OnDataReceived += UpdateProfile;
             await SerialCommsManager.ConnectMouse(SerialCommsManager.MouseInstance.PortName);
 
-            string loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Pharetra vel turpis nunc eget lorem dolor.";
+            //string loremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Pharetra vel turpis nunc eget lorem dolor.";
 
-            //string stringProfile = SerialCommsManager.MouseInstance.CurrentProfile.StringifyProfile();
-
-            await SerialCommsManager.SendData(loremIpsum);
+            string stringProfile = SerialCommsManager.MouseInstance.CurrentProfile.StringifyProfile();
+            sentProfile = stringProfile;
+            origMsg = "origMsgVisible";
+            await SerialCommsManager.SendData(stringProfile);
         }
         return;
 

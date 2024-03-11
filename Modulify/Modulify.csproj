@@ -50,6 +50,14 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="Pages\Index.razor.css" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Pages\Index.razor.css" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Include="System.IO.Ports" Version="8.0.0" />
