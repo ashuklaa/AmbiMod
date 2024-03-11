@@ -11,15 +11,15 @@
 
 #include <Keyboard.h>
 #include <Mouse.h>
-#include <ArduinoSTL.h>
+//#include <SimpleVector.h>
 #include <PMW3360.h>
 #include <Adafruit_Fingerprint.h>
 #include <Hashtable.h>
 
 #define is_pressed LOW
 
-std::vector<int> mouse_keys = {MOUSE_LEFT, MOUSE_RIGHT, MOUSE_MIDDLE};
-std::vector<int> keyboard_modifiers = {KEY_LEFT_CTRL, KEY_LEFT_SHIFT, KEY_LEFT_ALT, KEY_LEFT_GUI, KEY_RIGHT_CTRL, KEY_RIGHT_SHIFT, 
+SimpleVector<int> mouse_keys = {MOUSE_LEFT, MOUSE_RIGHT, MOUSE_MIDDLE};
+SimpleVector<int> keyboard_modifiers = {KEY_LEFT_CTRL, KEY_LEFT_SHIFT, KEY_LEFT_ALT, KEY_LEFT_GUI, KEY_RIGHT_CTRL, KEY_RIGHT_SHIFT, 
                       KEY_RIGHT_ALT, KEY_RIGHT_GUI, KEY_TAB, KEY_CAPS_LOCK, KEY_BACKSPACE, KEY_RETURN, KEY_MENU,
                       KEY_INSERT, KEY_DELETE, KEY_HOME, KEY_END, KEY_PAGE_UP, KEY_PAGE_DOWN, KEY_UP_ARROW, 
                       KEY_DOWN_ARROW, KEY_LEFT_ARROW, KEY_RIGHT_ARROW, KEY_NUM_LOCK, KEY_KP_SLASH, KEY_KP_ASTERISK,
@@ -28,11 +28,11 @@ std::vector<int> keyboard_modifiers = {KEY_LEFT_CTRL, KEY_LEFT_SHIFT, KEY_LEFT_A
                       KEY_F3, KEY_F4, KEY_F5, KEY_F6, KEY_F7, KEY_F8, KEY_F9, KEY_F10, KEY_F11, KEY_F12, KEY_F13,
                       KEY_F14, KEY_F15, KEY_F16, KEY_F17, KEY_F18, KEY_F19, KEY_F20, KEY_F21, KEY_F22, KEY_F23,
                       KEY_F24, KEY_PRINT_SCREEN, KEY_SCROLL_LOCK, KEY_PAUSE};
-std::vector<char> keyboard_alpha = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+SimpleVector<char> keyboard_alpha = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
                         'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-std::vector<char> keyboard_num = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
-std::vector<char> keyboard_symbols_ns = {'`', '-', '=', '[', ']', '\\', ';', '\'', ',', '.', '/'};
-std::vector<char> keyboard_symbols_s = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '\"', '<', '>', '?'};
+SimpleVector<char> keyboard_num = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
+SimpleVector<char> keyboard_symbols_ns = {'`', '-', '=', '[', ']', '\\', ';', '\'', ',', '.', '/'};
+SimpleVector<char> keyboard_symbols_s = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '\"', '<', '>', '?'};
 
 Hashtable<int, String> mouse_keyboard_keys;
 
@@ -72,18 +72,18 @@ const int FINGERPRINT_SENSOR = 15;
 String PROFILE = "DEFAULT";
 
 // CONFIG DATA
-std::vector<int> dpi_values = {800, 1200, 1600, 2400, 5000}; // default values
+SimpleVector<int> dpi_values = {800, 1200, 1600, 2400, 5000}; // default values
 int current_dpi = 800; // default dpi
   // default button values
     // int = pin number
     // char = const global
     // acii table = https://www.commfront.com/pages/ascii-chart#:~:text=ASCII%20stands%20for%20American%20Standard,codes%20and%20Extended%20ASCII%20codes.
 
-std::vector<int> button_set = {LEFT_CLICK, RIGHT_CLICK, MIDDLE_CLICK, MOUSE_4, MOUSE_5, MOUSE_6, MOUSE_7, MOUSE_8, MOUSE_9, MOUSE_10, MOUSE_11, MOUSE_12};
-std::vector<char> button_binds[] = {{MOUSE_LEFT}, {MOUSE_RIGHT}, {MOUSE_MIDDLE}, {KEY_LEFT_ALT, KEY_RIGHT_ARROW}, {KEY_LEFT_ALT, KEY_LEFT_ARROW}, {'I'}, {'n'}, {'a'}, {'\''}, {'n'}, {'i'}, {'s'}};
+SimpleVector<int> button_set = {LEFT_CLICK, RIGHT_CLICK, MIDDLE_CLICK, MOUSE_4, MOUSE_5, MOUSE_6, MOUSE_7, MOUSE_8, MOUSE_9, MOUSE_10, MOUSE_11, MOUSE_12};
+SimpleVector<char> button_binds[] = {{MOUSE_LEFT}, {MOUSE_RIGHT}, {MOUSE_MIDDLE}, {KEY_LEFT_ALT, KEY_RIGHT_ARROW}, {KEY_LEFT_ALT, KEY_LEFT_ARROW}, {'I'}, {'n'}, {'a'}, {'\''}, {'n'}, {'i'}, {'s'}};
 
 // FOR STORED PROFILE OF EACH BUTTON
-Hashtable<int, std::vector<char>> button_map;
+Hashtable<int, SimpleVector<char>> button_map;
 
 // FOR CONFIG CONVERSIONS
 Hashtable<String, char> config_string_to_char;
@@ -348,9 +348,9 @@ void setup()
 }
 
 // split string by a given delimiter, excludes the delimiter
-std::vector<String> split(String str, char delimiter) {
+SimpleVector<String> split(String str, char delimiter) {
   
-  std::vector<String> config;
+  SimpleVector<String> config;
 
   String temp = "";
 
@@ -371,11 +371,11 @@ std::vector<String> split(String str, char delimiter) {
 
 // CONFIG RETURN HELPERS
   // FOR KEYBINDS/CONFIGS CONTAINING MORE THAN ONE ELEMENT
-String keybind_to_string(int button, std::vector<char> keybinds) {
+String keybind_to_string(int button, SimpleVector<char> keybinds) {
 
   String str_keybind = "";
 
-  std::vector<char> keybind = button_map.getElement(button); // get the value using the button as a key
+  SimpleVector<char> keybind = button_map.getElement(button); // get the value using the button as a key
 
   for (int i = 0; i < keybind.size(); i++) {
     str_keybind += config_char_to_string.getElement(keybind[i]);
@@ -389,7 +389,7 @@ String keybind_to_string(int button, std::vector<char> keybinds) {
 
 // BUTTON READ HELPERS
 // helper function for button reads
-std::vector<char> get_button_keybind(int pin) {
+SimpleVector<char> get_button_keybind(int pin) {
 
   return button_map.getElement(pin);
 
@@ -418,11 +418,11 @@ void read_config() {
       char button_delimiter = ':';
 
       config = Serial.readString(); // read again for actual mouse configuration
-      std::vector<String> config_read = split(config, config_delimiter); // stores each string for each individual button/config into one element in a vector
+      SimpleVector<String> config_read = split(config, config_delimiter); // stores each string for each individual button/config into one element in a vector
 
       for (int i = 0; i < config_read.size(); i++) {
 
-        std::vector<String> button_keybind = split(config_read[i], button_delimiter);
+        SimpleVector<String> button_keybind = split(config_read[i], button_delimiter);
 
         // Update Hashtable
         if (button_keybind[0] == "PROFILE") {
@@ -435,7 +435,7 @@ void read_config() {
 
         } else if (button_keybind[0] == "DPI_SET") {
 
-          std::vector<String> temp_dpi = split(button_keybind[1], "+"); // split dpi string into vector
+          SimpleVector<String> temp_dpi = split(button_keybind[1], "+"); // split dpi string into vector
 
           for (int i = 0; i < dpi_values.size(); i++){  // overwrite values into stored config vector
             dpi_values[i] = temp_dpi[i].toInt();
@@ -448,8 +448,8 @@ void read_config() {
         } else { // for all the buttons
 
           int designated_button = button_str_to_pin.getElement(button_keybind[0]);
-          std::vector<String> temp_button_str = split(button_keybind[1], "+");
-          std::vector<char> temp_keybinds;
+          SimpleVector<String> temp_button_str = split(button_keybind[1], "+");
+          SimpleVector<char> temp_keybinds;
 
           for (int i = 0; i < temp_button_str.size(); i++) { // iterates through each vector element adding it to a temp keybind set
             if (config_string_to_char.exists(temp_button_str[i])) {
@@ -635,7 +635,7 @@ void macro_press(int type, int pin) {
 
 //   if (pin == is_pressed) {
 
-//     std::vector<char> keybind = get_button_keybind(pin);
+//     SimpleVector<char> keybind = get_button_keybind(pin);
 //     int keybind_length = keybind.size();
 //     String keybind_type = check_keybind_type(pin);
 
