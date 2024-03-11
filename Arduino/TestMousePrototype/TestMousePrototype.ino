@@ -34,7 +34,7 @@ std::vector<char> keyboard_num = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '
 std::vector<char> keyboard_symbols_ns = {'`', '-', '=', '[', ']', '\\', ';', '\'', ',', '.', '/'};
 std::vector<char> keyboard_symbols_s = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '\"', '<', '>', '?'};
 
-Hashtable<char, std::string> mouse_keyboard_keys;
+Hashtable<char, String> mouse_keyboard_keys;
 
 // MOUSE POINTER LOCATION PINS
 const int MOUSE_X = A1; // pin 20
@@ -69,7 +69,7 @@ const int FINGERPRINT_SENSOR = 15;
 //Adafruit_Fingerprint finger = Adafruit_Fingerprint();
 
 // stores the current profile in the mouse
-std::string PROFILE = "DEFAULT";
+String PROFILE = "DEFAULT";
 
 // CONFIG DATA
 std::vector<int> dpi_values = {800, 1200, 1600, 2400, 5000}; // default values
@@ -86,9 +86,9 @@ std::vector<char> button_binds[] = {{MOUSE_LEFT}, {MOUSE_RIGHT}, {MOUSE_MIDDLE},
 Hashtable<int, std::vector<char>> button_map;
 
 // FOR CONFIG CONVERSIONS
-Hashtable<std::string, char> config_string_to_char;
-Hashtable<char, std::string> config_char_to_string;
-Hashtable<std::string, int> button_str_to_pin;
+Hashtable<String, char> config_string_to_char;
+Hashtable<char, String> config_char_to_string;
+Hashtable<String, int> button_str_to_pin;
 
 /*{
   {LEFT_CLICK, {MOUSE_LEFT}},
@@ -348,11 +348,11 @@ void setup()
 }
 
 // split string by a given delimiter, excludes the delimiter
-std::vector<std::string> split(std::string str, char delimiter) {
+std::vector<String> split(String str, char delimiter) {
   
-  std::vector<std::string> config;
+  std::vector<String> config;
 
-  std::string temp = "";
+  String temp = "";
 
   // iterate through each character in the string
   for (int i = 0; i < str.length(); i++) {
@@ -371,9 +371,9 @@ std::vector<std::string> split(std::string str, char delimiter) {
 
 // CONFIG RETURN HELPERS
   // FOR KEYBINDS/CONFIGS CONTAINING MORE THAN ONE ELEMENT
-std::string keybind_to_string(int button, std::vector<char> keybinds) {
+String keybind_to_string(int button, std::vector<char> keybinds) {
 
-  std::string str_keybind = "";
+  String str_keybind = "";
 
   std::vector<char> keybind = button_map.getElement(button); // get the value using the button as a key
 
@@ -396,7 +396,7 @@ std::vector<char> get_button_keybind(int pin) {
 }
 
 // returns if the keybind is a mouse or keyboard operation
-std::string check_keybind_type(int pin) {
+String check_keybind_type(int pin) {
 
   return mouse_keyboard_keys.getElement(pin); // 0 = mouse, 1 = keyboard
 
@@ -408,21 +408,21 @@ std::string check_keybind_type(int pin) {
 // loads configuration into the firmware
 void read_config() {
   if (Serial.available() > 0) {
-    std::string config = Serial.readString(); // data recieved from the companion program
+    String config = Serial.readString(); // data recieved from the companion program
 
     // check to verify serial string recieved is from the correct program
     if (config == 'Good Morning') {
       Serial.write('Gamer'); // send signal back to application
 
-      std::string config_delimiter = ";";
-      std::string button_delimiter = ":";
+      String config_delimiter = ";";
+      String button_delimiter = ":";
 
       config = Serial.readString(); // read again for actual mouse configuration
-      std::vector<std::string> config_read = split(config, config_delimiter); // stores each string for each individual button/config into one element in a vector
+      std::vector<String> config_read = split(config, config_delimiter); // stores each string for each individual button/config into one element in a vector
 
       for (int i = 0; i < config_read.size(); i++) {
 
-        std::vector<std::string> button_keybind = split(config_read[i], button_delimiter);
+        std::vector<String> button_keybind = split(config_read[i], button_delimiter);
 
         // Update Hashtable
         if (button_keybind[0] == "PROFILE") {
@@ -435,7 +435,7 @@ void read_config() {
 
         } else if (button_keybind[0] == "DPI_SET") {
 
-          std::vector<std::string> temp_dpi = split(button_keybind[1], "+"); // split dpi string into vector
+          std::vector<String> temp_dpi = split(button_keybind[1], "+"); // split dpi string into vector
 
           for (int i = 0; i < dpi_values.size(); i++){  // overwrite values into stored config vector
             dpi_values = temp_dpi[i].toInt();
@@ -448,7 +448,7 @@ void read_config() {
         } else { // for all the buttons
 
           int designated_button = button_str_to_pin.getElement(button_keybind[0]);
-          std::vector<std::string> temp_button_str = split(button_keybind[1], "+");
+          std::vector<String> temp_button_str = split(button_keybind[1], "+");
           std::vector<char> temp_keybinds;
 
           for (int i = 0; i < temp_button_str.size(); i++) { // iterates through each vector element adding it to a temp keybind set
@@ -495,7 +495,7 @@ switch(button_keybind[0]) {
 void config_test() {
 
   if (Serial.available() > 0) {
-    std::string current_config = "";
+    String current_config = "";
     
     // PROFILE
     current_config += "PROFILE:" + PROFILE + ";";
@@ -594,7 +594,7 @@ void config_test() {
 
 void send_profile() {
   if (Serial.available() > 0) {
-    std::string connection_confirmation = Serial.readString();
+    String connection_confirmation = Serial.readString();
 
     if (connection_confirmation == "Good Night") {
       Serial.write("Chat");
@@ -637,7 +637,7 @@ void button_press(int pin) {
 
     std::vector<char> keybind = get_button_keybind(pin);
     int keybind_length = keybind.size();
-    std::string keybind_type = check_keybind_type(pin);
+    String keybind_type = check_keybind_type(pin);
 
     if (keybind_length == 1) {
       switch(keybind_type) {
