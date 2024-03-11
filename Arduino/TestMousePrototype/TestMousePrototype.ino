@@ -18,8 +18,8 @@
 
 #define is_pressed LOW
 
-std::vector<char> mouse_keys = {MOUSE_LEFT, MOUSE_RIGHT, MOUSE_MIDDLE};
-std::vector<char> keyboard_modifiers = {KEY_LEFT_CTRL, KEY_LEFT_SHIFT, KEY_LEFT_ALT, KEY_LEFT_GUI, KEY_RIGHT_CTRL, KEY_RIGHT_SHIFT, 
+std::vector<int> mouse_keys = {MOUSE_LEFT, MOUSE_RIGHT, MOUSE_MIDDLE};
+std::vector<int> keyboard_modifiers = {KEY_LEFT_CTRL, KEY_LEFT_SHIFT, KEY_LEFT_ALT, KEY_LEFT_GUI, KEY_RIGHT_CTRL, KEY_RIGHT_SHIFT, 
                       KEY_RIGHT_ALT, KEY_RIGHT_GUI, KEY_TAB, KEY_CAPS_LOCK, KEY_BACKSPACE, KEY_RETURN, KEY_MENU,
                       KEY_INSERT, KEY_DELETE, KEY_HOME, KEY_END, KEY_PAGE_UP, KEY_PAGE_DOWN, KEY_UP_ARROW, 
                       KEY_DOWN_ARROW, KEY_LEFT_ARROW, KEY_RIGHT_ARROW, KEY_NUM_LOCK, KEY_KP_SLASH, KEY_KP_ASTERISK,
@@ -34,7 +34,7 @@ std::vector<char> keyboard_num = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '
 std::vector<char> keyboard_symbols_ns = {'`', '-', '=', '[', ']', '\\', ';', '\'', ',', '.', '/'};
 std::vector<char> keyboard_symbols_s = {'~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '{', '}', '|', ':', '\"', '<', '>', '?'};
 
-Hashtable<char, String> mouse_keyboard_keys;
+Hashtable<int, String> mouse_keyboard_keys;
 
 // MOUSE POINTER LOCATION PINS
 const int MOUSE_X = A1; // pin 20
@@ -87,7 +87,7 @@ Hashtable<int, std::vector<char>> button_map;
 
 // FOR CONFIG CONVERSIONS
 Hashtable<String, char> config_string_to_char;
-Hashtable<char, String> config_char_to_string;
+Hashtable<int, String> config_char_to_string;
 Hashtable<String, int> button_str_to_pin;
 
 /*{
@@ -631,26 +631,26 @@ void macro_press(int type, int pin) {
 
 }
 
-void button_press(int pin) {
+// void button_press(int pin) {
 
-  if (pin == is_pressed) {
+//   if (pin == is_pressed) {
 
-    std::vector<char> keybind = get_button_keybind(pin);
-    int keybind_length = keybind.size();
-    String keybind_type = check_keybind_type(pin);
+//     std::vector<char> keybind = get_button_keybind(pin);
+//     int keybind_length = keybind.size();
+//     String keybind_type = check_keybind_type(pin);
 
-    if (keybind_length == 1) {
-      switch(keybind_type) {
-        case "MOUSE": mouse_press(pin);
-        case "KEYBOARD": keyboard_press(pin);
-      }
-    }
+//     if (keybind_length == 1) {
+//       switch(keybind_type) {
+//         case "MOUSE": mouse_press(pin);
+//         case "KEYBOARD": keyboard_press(pin);
+//       }
+//     }
     
     
 
-  }
+//   }
 
-}
+// }
 
 
 
@@ -666,11 +666,11 @@ void loop()
   read_config(); // keep checking for updates
       
   // callibrate mouse
-  PMW3360_DATA data = sensor.readBurst();
+  /*PMW3360_DATA data = sensor.readBurst();
   if (data.isOnSurface && data.isMotion) {
     int mdx = constrain(data.dx, -127, 127);
     int mdy = constrain(data.dy, -127, 127);
     Mouse.move(mdx, mdy, 0);
-  }
+  }*/
   
 }
