@@ -42,7 +42,11 @@
     }
     private async void UpdateProfile()
     {
-        status = SerialCommsManager.response;
+        if (SerialCommsManager.response.Trim().StartsWith("PROFILE"))
+        {
+            status = SerialCommsManager.response;
+        }
+        
         await InvokeAsync(StateHasChanged);
     }
 

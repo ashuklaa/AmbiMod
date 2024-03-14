@@ -12,7 +12,7 @@ namespace Modulify
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
                 {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                    fonts.AddFont("Trebuchet-MS.ttf", "Trebuchet-MSRegular");
                 });
 
             builder.Services.AddMauiBlazorWebView();

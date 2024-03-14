@@ -449,15 +449,15 @@ SimpleVector<String> split(String str, char delimiter) {
 
 // CONFIG RETURN HELPERS
   // FOR KEYBINDS/CONFIGS CONTAINING MORE THAN ONE ELEMENT
-String keybind_to_string(int button, SimpleVector<int> keybinds) {
+String keybind_to_string(SimpleVector<int> keybinds) {
 
   String str_keybind = "";
 
-  SimpleVector<int> keybind = button_binds[button_map.getElement(button)]; // get the value using the button as a key
+  // get the value using the button as a key
 
-  for (int i = 0; i < keybind.size(); i++) {
-    str_keybind += config_ascii_to_string.getElement(keybind[i]);
-    if (i != keybind.size()-1) {
+  for (int i = 0; i < keybinds.size(); i++) {
+    str_keybind += config_ascii_to_string.getElement(keybinds[i]);
+    if (i != keybinds.size()-1) {
       str_keybind += "+";
     }
   }
@@ -552,7 +552,7 @@ void read_config() {
 
           int designated_button = button_str_to_pin.getElement(button_keybind[0]);
           SimpleVector<String> temp_button_str = split(button_keybind[1], "+");
-          SimpleVector<char> temp_keybinds;
+          SimpleVector<int> temp_keybinds;
 
           for (int i = 0; i < temp_button_str.size(); i++) { // iterates through each vector element adding it to a temp keybind set
             if (config_string_to_ascii.exists(temp_button_str[i])) {
@@ -578,7 +578,7 @@ void send_config() {
   String current_config = "";
   
   // PROFILE
-  current_config += "PROFILE:" + update_profile() + ";";
+  current_config += "PROFILE:" + get_profile() + ";";
 
   // DPI
   current_config += "DPI:" + String(current_dpi) + ";";
@@ -598,73 +598,73 @@ void send_config() {
   // LEFT_CLICK
   current_config += "LEFT_CLICK:";
   for(int i = 0; i < button_binds[0].size(); i++) {
-    current_config += keybind_to_string(LEFT_CLICK, button_binds[button_map.getElement(LEFT_CLICK)]);
+    current_config += keybind_to_string(button_binds[button_map.getElement(LEFT_CLICK)]);
   }
   current_config += ";";
 
   current_config += "RIGHT_CLICK:";
   for(int i = 0; i < button_binds[0].size(); i++) {
-    current_config += keybind_to_string(RIGHT_CLICK, button_binds[button_map.getElement(RIGHT_CLICK)]);
+    current_config += keybind_to_string(button_binds[button_map.getElement(RIGHT_CLICK)]);
   }
   current_config += ";";
 
   current_config += "MIDDLE_CLICK:";
   for(int i = 0; i < button_binds[0].size(); i++) {
-    current_config += keybind_to_string(MIDDLE_CLICK, button_binds[button_map.getElement(MIDDLE_CLICK)]);
+    current_config += keybind_to_string(button_binds[button_map.getElement(MIDDLE_CLICK)]);
   }
   current_config += ";";
 
   current_config += "MOUSE_4:";
   for(int i = 0; i < button_binds[0].size(); i++) {
-    current_config += keybind_to_string(MOUSE_4, button_binds[button_map.getElement(MOUSE_4)]);
+    current_config += keybind_to_string(button_binds[button_map.getElement(MOUSE_4)]);
   }
   current_config += ";";
 
   current_config += "MOUSE_5:";
   for(int i = 0; i < button_binds[0].size(); i++) {
-    current_config += keybind_to_string(MOUSE_5, button_binds[button_map.getElement(MOUSE_5)]);
+    current_config += keybind_to_string(button_binds[button_map.getElement(MOUSE_5)]);
   }
   current_config += ";";    
 
   current_config += "MOUSE_6:";
   for(int i = 0; i < button_binds[0].size(); i++) {
-    current_config += keybind_to_string(MOUSE_6, button_binds[button_map.getElement(MOUSE_6)]);
+    current_config += keybind_to_string(button_binds[button_map.getElement(MOUSE_6)]);
   }
   current_config += ";";
 
   current_config += "MOUSE_7:";
   for(int i = 0; i < button_binds[0].size(); i++) {
-    current_config += keybind_to_string(MOUSE_7, button_binds[button_map.getElement(MOUSE_7)]);
+    current_config += keybind_to_string(button_binds[button_map.getElement(MOUSE_7)]);
   }
   current_config += ";";
 
   current_config += "MOUSE_8:";
   for(int i = 0; i < button_binds[0].size(); i++) {
-    current_config += keybind_to_string(MOUSE_8, button_binds[button_map.getElement(MOUSE_8)]);
+    current_config += keybind_to_string(button_binds[button_map.getElement(MOUSE_8)]);
   }
   current_config += ";";    
 
   current_config += "MOUSE_9:";
   for(int i = 0; i < button_binds[0].size(); i++) {
-    current_config += keybind_to_string(MOUSE_9, button_binds[button_map.getElement(MOUSE_9)]);
+    current_config += keybind_to_string(button_binds[button_map.getElement(MOUSE_9)]);
   }
   current_config += ";";
 
   current_config += "MOUSE_10:";
   for(int i = 0; i < button_binds[0].size(); i++) {
-    current_config += keybind_to_string(MOUSE_10, button_binds[button_map.getElement(MOUSE_10)]);
+    current_config += keybind_to_string(button_binds[button_map.getElement(MOUSE_10)]);
   }
   current_config += ";";
 
   current_config += "MOUSE_11:";
   for(int i = 0; i < button_binds[0].size(); i++) {
-    current_config += keybind_to_string(MOUSE_11, button_binds[button_map.getElement(MOUSE_11)]);
+    current_config += keybind_to_string(button_binds[button_map.getElement(MOUSE_11)]);
   }
   current_config += ";";   
 
   current_config += "MOUSE_12:";
   for(int i = 0; i < button_binds[0].size(); i++) {
-    current_config += keybind_to_string(MOUSE_12, button_binds[button_map.getElement(MOUSE_12)]);
+    current_config += keybind_to_string(button_binds[button_map.getElement(MOUSE_12)]);
   }
   current_config += ";";
 

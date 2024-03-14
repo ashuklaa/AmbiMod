@@ -10,6 +10,7 @@ namespace Modulify.Shared
         event Action OnMouseDetected;
         event Action OnDataReceived;
         string response { get; }
+        string actProfile { get; }
         MouseInstance MouseInstance { get; }
         Task DetectMouse();
         bool MouseFound();
@@ -35,6 +36,7 @@ namespace Modulify.Shared
         private const string MouseIDENT = "Hello";
         private const string ResponseIDENT = "World";
         public string response { get; set; } = "";
+        public string actProfile { get; set; } = "";
 
         public MouseInstance MouseInstance
         {
@@ -158,7 +160,9 @@ namespace Modulify.Shared
 
                             if (!MouseFound())
                             {
-                                mouseInstance = new MouseInstance(serialPort, true);
+                                actProfile = serialPort.ReadLine();
+                                actProfile  = actProfile.Trim();
+                                mouseInstance = new MouseInstance(serialPort, true, actProfile);
                             }
                             OnMouseDetected?.Invoke();
                             //await ConnectMouse(serialPort);
@@ -187,7 +191,7 @@ namespace Modulify.Shared
             
             if(mouseInstance == null) 
             {
-                mouseInstance = new MouseInstance(portName, true);
+                mouseInstance = new MouseInstance(portName, true, actProfile);
             }
             portName.DataReceived += ReceiveData;
             if (mouseInstance.PortName.IsOpen)

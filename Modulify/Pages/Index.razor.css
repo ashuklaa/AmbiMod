@@ -1,15 +1,25 @@
 ﻿.layoutContainer{
     display: flex;
     flex-direction: column;
+    justify-content: space-evenly;
+    align-items: start;
     overflow-wrap: anywhere;
+
+}
+
+button{
+    border-style: solid;
+    border-radius: 5px;
+    width: 40%;
+    
 }
 
 .origMsgInvis{
-    display: hidden; 
+    display: hidden;
     opacity: 0;
 }
 
 .origMsgVisible{
-    display: flex; 
+    display: flex;
     opacity: 1;
 }

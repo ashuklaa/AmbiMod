@@ -1,15 +1,62 @@
-﻿@page "/KeyTest"
+﻿@using System.IO;
+@using System.Linq;
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Linq;
+@using System.IO.Ports
+@inject ISerialCommsManager SerialCommsManager
+@inject IJSRuntime JSRuntime
+@page "/KeyTest"
 
 <h3>KeyTester</h3>
 
-<section class="mPic-dbnce">
+<section class="layoutcontainer">
     <!--image of mouse-->
-    <img height="75%" src="data:image/jpeg;base64,@b64Mouse1" />
-    <img height="80%" src="data:image/jpeg;base64,@b64Mouse2" />
+    <h2>@testStatus</h2>
+    <button @onclick=ToggleTest>Toggle Test Mode</button>
+    <p>@runningLog</p>
 </section>
 
 
 @code {
+
+    private const string TestMode = "Testing";
+    private const string TestACK = "123";
+    public string testStatus = "Awaiting test mode...";
+    public string runningLog = "";
+    private int testCtr = 0;
+
+    public async void ToggleTest()
+    {
+        SerialPort mousePort = SerialCommsManager.MouseInstance.PortName;
+        runningLog = "";
+        SerialCommsManager.OnDataReceived += LogHandler;
+        await Task.Run(() => SerialCommsManager.SendData(TestMode));
+    }
+
+    public async void LogHandler()
+    {
+        if (SerialCommsManager.response.Trim() == TestACK && testCtr == 0)
+        {
+            testCtr = 1;
+            testStatus = "Test mode confirmed, ready to test inputs";
+            SerialCommsManager.MouseInstance.PortName.DataReceived += KeyTestLogger;
+            await InvokeAsync(StateHasChanged);
+        }
+        else if (SerialCommsManager.response.Trim() == TestACK && testCtr == 1)
+        {
+            testCtr = 0;
+            testStatus = "Test Mode Disabled";
+            SerialCommsManager.MouseInstance.PortName.DataReceived -= KeyTestLogger;
+            await InvokeAsync(StateHasChanged);
+        }
+
+    }
+    public async void KeyTestLogger(object sender, SerialDataReceivedEventArgs e)
+    {
+        await Task.Delay(250);
+        runningLog += SerialCommsManager.response;
+        await InvokeAsync(StateHasChanged);
+    }
     public static string GetBase64ImageString(string imagePath)
     {
         // Read the file into a byte array

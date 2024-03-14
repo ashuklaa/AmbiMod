@@ -1,15 +1,8 @@
-.mPic-dbnce{
-    margin: auto;
-    display: flex;
-    flex-flow: row;
-    width: 80vw;
-
-
-}
-.mPic-dbnce img{
-    padding-bottom: 5%;
-    width: 50vw;
+.layoutcontainer{
     display: flex;
     flex-direction: column;
-    margin: auto;
+    height: 80vh;
+    width: auto;
+    justify-content: space-around;
+    align-items: center;
 }

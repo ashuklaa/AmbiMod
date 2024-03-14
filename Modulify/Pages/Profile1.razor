@@ -8,71 +8,100 @@
 <h3>Profiles</h3>
 
 @* PROFILE SELECTOR HERE WITH DROPDOWN *@
-<h3>
-    Key Configuration - <select @onchange="LoadProfile">
-        @foreach (var profile in profileNames)
-        {
-            <option value="@profile">@profile</option>
-        }
-    </select>
-</h3>
+<nav class="headercontainer">
+    <h3>
+        Key Configuration - <select @onchange="LoadProfile" value="@SerialCommsManager.MouseInstance.CurrentProfile.ProfileName">
+            @foreach (var profile in profileNames)
+            {
+                <option value="@profile">@profile</option>
+            }
+        </select>
+    </h3>
+    <div class="buttonContainer">
+
+        <button @onclick=toggleUI>@moduleButtonText</button>
+        <button @onclick="SaveProfileAsync">Save Profile</button>
+        <button @onclick="SendProfileToMouse">Save and Send</button>
+    </div>
+
+</nav>
+
 
 
 @* MAIN LAYOUT CONTAINER, EVERYTHING GOES HERE *@
 <main class="layoutcontainer">
+    @if (!isModuleClicked)
+    {
+        <div class="mainUIContainer">
+            <section class="top-config">
+                <section class="m1-sL-m4-m5">
+                    <!--section for Left Mouse Buttons (M1,M3, ScWheel Left)-->
+                    <p>Left M1&nbsp;<input type="text" placeholder="M1" @onchange="@(e => UpdateKeybind("LEFT_CLICK", e))" value="@keybinds["LEFT_CLICK"]"></p>
+                    <p>&nbsp;M4&nbsp;&nbsp;<input type="text" placeholder="M4" @onchange="@(e => UpdateKeybind("MOUSE_4", e))" value="@keybinds["MOUSE_4"]" /></p>
+                    <p>&nbsp;M5&nbsp;&nbsp;<input type="text" placeholder="M5" @onchange="@(e => UpdateKeybind("MOUSE_5", e))" value="@keybinds["MOUSE_5"]" /></p>
+                </section>
+                <section class="mPic-dbnce">
+                    <!--image of mouse, debounce delay textbox-->
+                    <p>Middle M3&nbsp;<input type="text" placeholder="M3" @onchange="@(e => UpdateKeybind("MIDDLE_CLICK", e))" value="@keybinds["MIDDLE_CLICK"]" /></p>
+                    <img height="75%" src="data:image/jpeg;base64,@b64Mouse" />
+                </section>
+                <section class="m2-sR-m3">
+                    <!--section for Right Mouse Buttons (M2, M3, ScWheel Right)-->
+                    <p>Right M2&nbsp;<input type="text" placeholder="M2" @onchange="@(e => UpdateKeybind("RIGHT_CLICK", e))" value="@keybinds["RIGHT_CLICK"]" /></p>
 
-    <section class="top-config">
-        <section class="m1-sL-m4-m5">   <!--section for Left Mouse Buttons (M1,M3, ScWheel Left)-->
-            <p>Left Mouse Button&nbsp;<input type="text" placeholder="M1" @onchange="@(e => UpdateKeybind("LEFT_CLICK", e))" value="@keybinds["LEFT_CLICK"]"></p>
-            <div class="midalign"><p>Left Side Panel</p><span></span></div>
-            <div class="sideButtonGrid">
-                <p>&nbsp;M4&nbsp;&nbsp;<input type="text" placeholder="M4" @onchange="@(e => UpdateKeybind("MOUSE_4", e))" value="@keybinds["MOUSE_4"]" /></p>
-                <p>&nbsp;M5&nbsp;&nbsp;<input type="text" placeholder="M5" @onchange="@(e => UpdateKeybind("MOUSE_5", e))" value="@keybinds["MOUSE_5"]" /></p>
-                <p>&nbsp;M6&nbsp;&nbsp;<input type="text" placeholder="M6" @onchange="@(e => UpdateKeybind("MOUSE_6", e))" value="@keybinds["MOUSE_6"]" /></p>
-                <p>&nbsp;M7&nbsp;&nbsp;<input type="text" placeholder="M7" @onchange="@(e => UpdateKeybind("MOUSE_7", e))" value="@keybinds["MOUSE_7"]" /></p>
-                <p>&nbsp;M8&nbsp;&nbsp;<input type="text" placeholder="M8" @onchange="@(e => UpdateKeybind("MOUSE_8", e))" value="@keybinds["MOUSE_8"]" /></p>
+                    <p>Debounce Delay&nbsp;<input type="text" placeholder="50ms" @bind="msDebounce" /></p>
+                </section>
+            </section>
+            <section class="bot-config">
+                <aside class="mod-detect">
+                    <!--module detection-->
+
+                </aside>
+                <section class="dpi-scale">
+                    <!--DPI Slider-->
+
+                    <aside>
+                        <h3>DPI Presets</h3>
+                        <p>Current DPI: @DPI&nbsp;</p>
+                    
+                    </aside>
+                    <section class="dpiSet">
+                        <input type="text" placeholder="400" @bind=DPI_SET[0] />
+                        <input type="text" placeholder="800" @bind=DPI_SET[1] />
+                        <input type="text" placeholder="1200" @bind=DPI_SET[2] />
+                        <input type="text" placeholder="1600" @bind=DPI_SET[3] />
+                        <input type="text" placeholder="2000" @bind=DPI_SET[4] />
+                    </section>
+                </section>
+            </section>
+        </div>
+       
+    } else{
+        <div class="alignmentcontainer">
+            <div class="leftalignfields">
                 <p>&nbsp;M9&nbsp;&nbsp;<input type="text" placeholder="M9" @onchange="@(e => UpdateKeybind("MOUSE_9", e))" value="@keybinds["MOUSE_9"]" /></p>
                 <p>M10&nbsp;<input type="text" placeholder="M10" @onchange="@(e => UpdateKeybind("MOUSE_10", e))" value="@keybinds["MOUSE_10"]" /></p>
                 <p>M11&nbsp;<input type="text" placeholder="M11" @onchange="@(e => UpdateKeybind("MOUSE_11", e))" value="@keybinds["MOUSE_11"]" /></p>
                 <p>M12&nbsp;<input type="text" placeholder="M12" @onchange="@(e => UpdateKeybind("MOUSE_12", e))" value="@keybinds["MOUSE_12"]" /></p>
             </div>
+            <img src="data:image/jpeg;base64,@sideMouse" />
+            <div class="rightalignfields">
+                <p>&nbsp;M6&nbsp;&nbsp;<input type="text" placeholder="M6" @onchange="@(e => UpdateKeybind("MOUSE_6", e))" value="@keybinds["MOUSE_6"]" /></p>
+                <p>&nbsp;M7&nbsp;&nbsp;<input type="text" placeholder="M7" @onchange="@(e => UpdateKeybind("MOUSE_7", e))" value="@keybinds["MOUSE_7"]" /></p>
+                <p>&nbsp;M8&nbsp;&nbsp;<input type="text" placeholder="M8" @onchange="@(e => UpdateKeybind("MOUSE_8", e))" value="@keybinds["MOUSE_8"]" /></p>
+            </div>
+        </div>
 
 
-        </section>
-        <section class="mPic-dbnce">    <!--image of mouse, debounce delay textbox-->
-            <p>M3&nbsp;<input type="text" placeholder="M3" @onchange="@(e => UpdateKeybind("MIDDLE_CLICK", e))" value="@keybinds["MIDDLE_CLICK"]" /></p>
-            <img height="75%" src="data:image/jpeg;base64,@b64Mouse" />
-            <p>Debounce Delay&nbsp;<input type="text" placeholder="50ms" @bind="msDebounce"/></p>
-        </section>
-        <section class="m2-sR-m3">      <!--section for Right Mouse Buttons (M2, M3, ScWheel Right)-->
-            <p>Right Mouse Button&nbsp;<input type="text" placeholder="M2" @onchange="@(e => UpdateKeybind("RIGHT_CLICK", e))" value="@keybinds["RIGHT_CLICK"]" /></p>
-            <p>&nbsp;</p>
-            <p>&nbsp;</p>
-            <p>&nbsp;</p>
-        </section>
-    </section>
-    <section class="bot-config">
-        <aside class="mod-detect">      <!--module detection-->
-            <button @onclick="SaveProfileAsync">Save Profile</button>
-            <button @onclick="SendProfileToMouse">Send to Mouse</button>
-        </aside>
-        <section class="dpi-scale">     <!--DPI Slider-->
-            <aside>Set DPI: @DPI&nbsp;</aside>
-            <section class="dpiSet">
-                <p>Preset 1 <input type="text" placeholder="400" @bind=DPI_SET[0]/></p>
-                <p>Preset 2 <input type="text" placeholder="800" @bind=DPI_SET[1] /></p>
-                <p>Preset 3 <input type="text" placeholder="1200" @bind=DPI_SET[2] /></p>
-                <p>Preset 4 <input type="text" placeholder="1600" @bind=DPI_SET[3] /></p>
-                <p>Preset 5 <input type="text" placeholder="2000" @bind=DPI_SET[4] /></p>
-            </section>
-        </section>
-    </section>
-    
+
+    }
+
 </main>
 
 @* DONT TOUCH ANYTHING IN @code BLOCKS *@
 @code {
-
+    bool isModuleClicked = false;
+    string moduleButtonText = "MOBA Module";
     private string ProfileName = "";
     private int DPI = 0;
     public string[] DPI_SET = new string[5];
@@ -85,6 +114,9 @@
     private string selectedProfile;
     private List<string> profileNames = new();
     private int returnedStrCtr = 0;
+
+    const string ProfileSEND = "Good Night";
+    const string ProfileRDY = "Gamer";
 
 
     private string selectedProfileName;
@@ -101,7 +133,8 @@
 
             profileNames = files.Select(Path.GetFileNameWithoutExtension).ToList();
         }
-        selectedProfile = profileNames.First();
+        selectedProfile = SerialCommsManager.MouseInstance?.CurrentProfile.ProfileName;
+        LoadProfile(selectedProfile);
 
         // SerialCommsManager.OnMouseConnected += GetProfile;
         // try
@@ -124,6 +157,8 @@
         MouseInstance connectedMouse = SerialCommsManager.MouseInstance;
         SerialCommsManager.OnDataReceived += DisplayOutputWindow;
         returnedStrCtr = 0;
+        await SerialCommsManager.SendData(ProfileSEND);
+        while (SerialCommsManager.response.Trim() != ProfileRDY) {; }
         connectedMouse.CurrentProfile = selProfile;
         await SerialCommsManager.SendData(connectedMouse.CurrentProfile.StringifyProfile());
     }
@@ -141,9 +176,23 @@
         //     var profileTextWindow = await JSRuntime.InvokeAsync<bool>("confirm", profiletext);
         //     returnedStrCtr = 0;
         // }
-        
+
         return;
     }
+
+    private void toggleUI()
+    {
+        isModuleClicked = !isModuleClicked;
+        if (!isModuleClicked)
+        {
+            moduleButtonText = "MOBA Module";
+        }
+        else
+        {
+            moduleButtonText = "Return to Config";
+        }
+    }
+
     private async Task SaveProfileAsync()
     {
         // Ask for profile name
@@ -174,6 +223,11 @@
     {
         Profiles tempProfile = new Profiles(profileName, Convert.ToString(DPI), DPI_SET, Convert.ToString(msDebounce), keybinds);
         tempProfile.SaveToJSON();
+    }
+    private void LoadProfile(string profileName)
+    {
+        var eventArgs = new ChangeEventArgs { Value = profileName };
+        LoadProfile(eventArgs);
     }
 
     private void LoadProfile(ChangeEventArgs e)
@@ -225,7 +279,8 @@
         return Convert.ToBase64String(imageBytes);
     }
     static readonly string userImgLoc = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\source\\repos\\AmbiMod\\Modulify\\wwwroot\\mouseasset.png";
-
+    static readonly string sideViewLoc = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\source\\repos\\AmbiMod\\Modulify\\wwwroot\\AmbiMod_9-Button_Side_Panel.png";
 
     string b64Mouse =  GetBase64ImageString(userImgLoc);
+    string sideMouse = GetBase64ImageString(sideViewLoc);
 }

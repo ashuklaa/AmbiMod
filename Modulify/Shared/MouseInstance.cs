@@ -13,11 +13,11 @@ namespace Modulify.Shared
         public bool IsConnected { get; set; }
         public Profiles CurrentProfile { get; set; }
 
-        public MouseInstance(SerialPort portName, bool connected) 
+        public MouseInstance(SerialPort portName, bool connected, string activeProfile) 
         {
             this.PortName = portName;
             this.IsConnected = connected;
-            this.CurrentProfile = new Profiles("defaultprofile");
+            this.CurrentProfile = new Profiles(activeProfile);
             //Console.WriteLine($"Arduino successfully detected on port {portName.ToString()}. Connected: {connected}");
         }
     }

@@ -1,6 +1,6 @@
 String MouseIDENT = "Hello";
 String ResponseIDENT = "World";
-boolean receiving = true;
+bool testMode = false;
 
 void setup() {
   Serial.begin(115200);
@@ -15,6 +15,23 @@ void loop() {
 
     if (response == MouseIDENT){
       Serial.println(ResponseIDENT);
+      Serial.println("Profile6");
+    } else if(response == "Testing"){
+      testMode = !testMode;
+      Serial.println("123");
+      delay(3000);
+      Serial.println("LMB");
+      delay(2000);
+      Serial.println("RMB");
+      delay(2000);
+      Serial.println("KEY_LEFT_CTRL+KEY_LEFT_ARROW");
+      delay(3000);
+      Serial.println("Test Sequence Complete");
+      // if (testMode == true){
+      //   Serial.println("Test Mode Enabled");
+      // } else if(testMode == false){
+      //   Serial.println("Test Mode Disabled");
+      // }
     } else if (response.startsWith("ProfileName:")){
       Serial.println("Profile Received from App: " + response);
     } else{
