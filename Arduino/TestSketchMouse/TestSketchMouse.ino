@@ -32,7 +32,9 @@ void loop() {
       // } else if(testMode == false){
       //   Serial.println("Test Mode Disabled");
       // }
-    } else if (response.startsWith("ProfileName:")){
+    } else if (response == "Good Night"){
+      Serial.println("Gamer");
+    } else if (response.startsWith("PROFILE:")){
       Serial.println("Profile Received from App: " + response);
     } else{
       Serial.println(response);
